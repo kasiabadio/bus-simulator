@@ -42,7 +42,9 @@ int main(void)
 		std::cout << "Error: glewInit()" << std::endl;
 	}
 
-   
+
+	scene.write_models();
+
 	
 	while(!glfwWindowShouldClose(scene.read_window()))
 	{

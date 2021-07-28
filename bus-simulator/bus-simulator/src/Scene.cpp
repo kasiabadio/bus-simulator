@@ -14,6 +14,14 @@ Scene::Scene(int _width, int _height)
 }
 
 
+void Scene::write_models()
+{
+	// TODO: Search for all .obj files which are models
+	
+	models.emplace_back(Model("res/models/Sting-Sword-lowpoly.obj"));
+	
+}
+
 
 void Scene::draw_scene() const
 {
@@ -22,7 +30,7 @@ void Scene::draw_scene() const
 	// TODO: draw each model
 	for (int i = 0; i < models.size(); i++)
 	{
-		// TODO: draw_model()
+		models[i].draw_model();
 	}
 	
 	glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr);

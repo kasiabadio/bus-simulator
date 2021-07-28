@@ -21,6 +21,7 @@ public:
 	Scene(int _width, int _height);
 	void draw_scene() const;
 	GLFWwindow* read_window() const { return window; }
+	void write_models();
 	std::vector<Model> read_models() const { return models; }
 
 };
