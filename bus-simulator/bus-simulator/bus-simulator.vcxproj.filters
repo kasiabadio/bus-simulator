@@ -27,6 +27,12 @@
     <ClCompile Include="src\Scene.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lodepng.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Model.h">
@@ -38,5 +44,34 @@
     <ClInclude Include="src\Scene.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="src\Shader.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lodepng.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\textures\Sting_Base_Color.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\bricks.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\Bus_tex.tga.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\f_colored.glsl" />
+    <None Include="res\shaders\f_constant.glsl" />
+    <None Include="res\shaders\f_lambert.glsl" />
+    <None Include="res\shaders\f_lamberttextured.glsl" />
+    <None Include="res\shaders\f_textured.glsl" />
+    <None Include="res\shaders\v_colored.glsl" />
+    <None Include="res\shaders\v_constant.glsl" />
+    <None Include="res\shaders\v_lambert.glsl" />
+    <None Include="res\shaders\v_lamberttextured.glsl" />
+    <None Include="res\shaders\v_textured.glsl" />
   </ItemGroup>
 </Project>

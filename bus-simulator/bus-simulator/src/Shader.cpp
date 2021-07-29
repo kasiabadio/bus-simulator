@@ -1,25 +1,8 @@
-﻿/*
-Niniejszy program jest wolnym oprogramowaniem; możesz go
-rozprowadzać dalej i / lub modyfikować na warunkach Powszechnej
-Licencji Publicznej GNU, wydanej przez Fundację Wolnego
-Oprogramowania - według wersji 2 tej Licencji lub(według twojego
-wyboru) którejś z późniejszych wersji.
-
-Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on
-użyteczny - jednak BEZ JAKIEJKOLWIEK GWARANCJI, nawet domyślnej
-gwarancji PRZYDATNOŚCI HANDLOWEJ albo PRZYDATNOŚCI DO OKREŚLONYCH
-ZASTOSOWAŃ.W celu uzyskania bliższych informacji sięgnij do
-Powszechnej Licencji Publicznej GNU.
-
-Z pewnością wraz z niniejszym programem otrzymałeś też egzemplarz
-Powszechnej Licencji Publicznej GNU(GNU General Public License);
-jeśli nie - napisz do Free Software Foundation, Inc., 59 Temple
-Place, Fifth Floor, Boston, MA  02110 - 1301  USA
-*/
-
+﻿
 #include "Shader.h"
 
-
+#include <iostream>
+#include <malloc.h>
 
 ShaderProgram *spLambert;
 ShaderProgram *spConstant;
@@ -29,11 +12,11 @@ ShaderProgram* spLambertTextured;
 
 
 void initShaders() {
-	spLambert = new ShaderProgram("v_lambert.glsl", NULL, "f_lambert.glsl");
-	spConstant = new ShaderProgram("v_constant.glsl", NULL, "f_constant.glsl");
-	spTextured = new ShaderProgram("v_textured.glsl", NULL, "f_textured.glsl");
-	spColored = new ShaderProgram("v_colored.glsl", NULL, "f_colored.glsl");
-	spLambertTextured = new ShaderProgram("v_lamberttextured.glsl", NULL, "f_lamberttextured.glsl");
+	spLambert = new ShaderProgram("res/shaders/v_lambert.glsl", NULL, "res/shaders/f_lambert.glsl");
+	spConstant = new ShaderProgram("res/shaders/v_constant.glsl", NULL, "res/shaders/f_constant.glsl");
+	spTextured = new ShaderProgram("res/shaders/v_textured.glsl", NULL, "res/shaders/f_textured.glsl");
+	spColored = new ShaderProgram("res/shaders/v_colored.glsl", NULL, "res/shaders/f_colored.glsl");
+	spLambertTextured = new ShaderProgram("res/shaders/v_lamberttextured.glsl", NULL, "res/shaders/f_lamberttextured.glsl");
 }
 
 void freeShaders() {
@@ -44,21 +27,26 @@ void freeShaders() {
 	delete spLambertTextured;
 }
 
-//Procedura wczytuje plik do tablicy znaków.
+
+// Reads shaders files
 char* ShaderProgram::readFile(const char* fileName) {
 	int filesize;
 	FILE *plik;
 	char* result;
 
-	#pragma warning(suppress : 4996) //Wyłączenie błędu w Visual Studio wynikające z nietrzymania się standardów przez Microsoft.
-	plik=fopen(fileName,"rb");
+	#pragma warning(suppress : 4996)
+	
+	// rb is an option you should use when opening non-text files
+	plik = fopen(fileName,"rb");
 	if (plik != NULL) {
 		fseek(plik, 0, SEEK_END);
 		filesize = ftell(plik);
 		fseek(plik, 0, SEEK_SET);
 		result = new char[filesize + 1];
-		#pragma warning(suppress : 6386) //Wyłączenie błędu w Visual Studio wynikającego z błędnej analizy statycznej kodu.
-		int readsize=fread(result, 1, filesize, plik);
+
+		#pragma warning(suppress : 6386) 
+		int readsize = fread(result, 1, filesize, plik);
+		//std::cout << "readsize: " << readsize << std::endl;
 		result[filesize] = 0;
 		fclose(plik);
 
@@ -69,108 +57,109 @@ char* ShaderProgram::readFile(const char* fileName) {
 
 }
 
-//Metoda wczytuje i kompiluje shader, a następnie zwraca jego uchwyt
-GLuint ShaderProgram::loadShader(GLenum shaderType,const char* fileName) {
-	//Wygeneruj uchwyt na shader
-	GLuint shader=glCreateShader(shaderType);//shaderType to GL_VERTEX_SHADER, GL_GEOMETRY_SHADER lub GL_FRAGMENT_SHADER
-	//Wczytaj plik ze źródłem shadera do tablicy znaków
-	const GLchar* shaderSource=readFile(fileName);
-	//Powiąż źródło z uchwytem shadera
-	glShaderSource(shader,1,&shaderSource,NULL);
-	//Skompiluj źródło
-	glCompileShader(shader);
-	//Usuń źródło shadera z pamięci (nie będzie już potrzebne)
-	delete []shaderSource;
+// A method which reads and compiles shader, and then returns its handle
+GLuint ShaderProgram::compile_shader(GLenum _shader_type, const char* _filename) {
 
-	//Pobierz log błędów kompilacji i wyświetl
-	int infologLength = 0;
-	int charsWritten  = 0;
-	char *infoLog;
+	// Generate handle for a shader
+	GLuint shader_id = glCreateShader(_shader_type);
+	const GLchar* shader_src = readFile(_filename);
+	
+	glShaderSource(shader_id, 1, &shader_src, NULL);
+	glCompileShader(shader_id);
+	
+	int result;
+	glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result);
+	if (result == GL_FALSE) {
+		int length;
+		glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &length);
+		
+		// alloca allocates memory on a stack dynamically
+		char* message = (char*)alloca(length * sizeof(char));
+		glGetShaderInfoLog(shader_id, length, &length, message);
 
-	glGetShaderiv(shader, GL_INFO_LOG_LENGTH,&infologLength);
+		std::cout << "Failed to compile ";
+		if (_shader_type == GL_VERTEX_SHADER)
+		{
+			std::cout << "vertex shader!" << std::endl;
+		}
+		else if (_shader_type == GL_GEOMETRY_SHADER)
+		{
+			std::cout << "geometry shader!" << std::endl;
+		}
+		else
+		{
+			std::cout << "fragment shader!" << std::endl;
+		}
+		std::cout << message << std::endl;
 
-	if (infologLength > 1) {
-		infoLog = new char[infologLength];
-		glGetShaderInfoLog(shader, infologLength, &charsWritten, infoLog);
-		printf("%s\n",infoLog);
-		delete []infoLog;
+		glDeleteShader(shader_id);
+		return 0;
 	}
-
-	//Zwróć uchwyt wygenerowanego shadera
-	return shader;
+	
+	return shader_id;
 }
 
-ShaderProgram::ShaderProgram(const char* vertexShaderFile,const char* geometryShaderFile,const char* fragmentShaderFile) {
-	//Wczytaj vertex shader
-	printf("Loading vertex shader...\n");
-	vertexShader=loadShader(GL_VERTEX_SHADER,vertexShaderFile);
 
-	//Wczytaj geometry shader
-	if (geometryShaderFile!=NULL) {
-		printf("Loading geometry shader...\n");
-		geometryShader=loadShader(GL_GEOMETRY_SHADER,geometryShaderFile);
-	} else {
-		geometryShader=0;
+ShaderProgram::ShaderProgram(const char* vertexShaderFile, const char* geometryShaderFile, const char* fragmentShaderFile) {
+
+	shaderProgram = glCreateProgram();
+	
+	vertexShader = compile_shader(GL_VERTEX_SHADER, vertexShaderFile);
+	fragmentShader = compile_shader(GL_FRAGMENT_SHADER, fragmentShaderFile);
+
+	if (geometryShaderFile != NULL) {
+		geometryShader = compile_shader(GL_GEOMETRY_SHADER, geometryShaderFile);
 	}
-
-	//Wczytaj fragment shader
-	printf("Loading fragment shader...\n");
-	fragmentShader=loadShader(GL_FRAGMENT_SHADER,fragmentShaderFile);
-
-	//Wygeneruj uchwyt programu cieniującego
-	shaderProgram=glCreateProgram();
-
-	//Podłącz do niego shadery i zlinkuj program
-	glAttachShader(shaderProgram,vertexShader);
-	glAttachShader(shaderProgram,fragmentShader);
-	if (geometryShaderFile!=NULL) glAttachShader(shaderProgram,geometryShader);
+	else {
+		geometryShader = 0;
+	}
+	
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	if (geometryShaderFile != NULL) glAttachShader(shaderProgram,geometryShader);
 	glLinkProgram(shaderProgram);
 
-	//Pobierz log błędów linkowania i wyświetl
-	int infologLength = 0;
-	int charsWritten  = 0;
-	char *infoLog;
+	// Checking whether linking was successful
+	int result;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &result);
+	if (result == GL_FALSE) {
+		int length;
+		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &length);
 
-	glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH,&infologLength);
+		// alloca allocates memory on a stack dynamically
+		char* message = (char*)alloca(length * sizeof(char));
+		glGetProgramInfoLog(shaderProgram, length, &length, message);
 
-	if (infologLength > 1)
-	{
-		infoLog = new char[infologLength];
-		glGetProgramInfoLog(shaderProgram, infologLength, &charsWritten, infoLog);
-		printf("%s\n",infoLog);
-		delete []infoLog;
+		std::cout << message << std::endl;
+
+		glDeleteProgram(shaderProgram);
+		if (geometryShaderFile != NULL) glDeleteShader(geometryShader);
 	}
-
-	printf("Shader program created \n");
+	
 }
 
 ShaderProgram::~ShaderProgram() {
-	//Odłącz shadery od programu
+
 	glDetachShader(shaderProgram, vertexShader);
-	if (geometryShader!=0) glDetachShader(shaderProgram, geometryShader);
+	if (geometryShader != 0) glDetachShader(shaderProgram, geometryShader);
 	glDetachShader(shaderProgram, fragmentShader);
 
-	//Wykasuj shadery
 	glDeleteShader(vertexShader);
-	if (geometryShader!=0) glDeleteShader(geometryShader);
+	if (geometryShader != 0) glDeleteShader(geometryShader);
 	glDeleteShader(fragmentShader);
 
-	//Wykasuj program
 	glDeleteProgram(shaderProgram);
 }
 
 
-//Włącz używanie programu cieniującego reprezentowanego przez aktualny obiekt
 void ShaderProgram::use() {
 	glUseProgram(shaderProgram);
 }
 
-//Pobierz numer slotu odpowiadającego zmiennej jednorodnej o nazwie variableName
 GLuint ShaderProgram::u(const char* variableName) {
-	return glGetUniformLocation(shaderProgram,variableName);
+	return glGetUniformLocation(shaderProgram, variableName);
 }
 
-//Pobierz numer slotu odpowiadającego atrybutowi o nazwie variableName
 GLuint ShaderProgram::a(const char* variableName) {
 	return glGetAttribLocation(shaderProgram,variableName);
 }

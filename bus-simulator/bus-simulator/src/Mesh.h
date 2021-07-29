@@ -13,9 +13,9 @@ private:
 	std::vector<glm::vec4> norms;
 	std::vector<glm::vec2> texture_coordinates;
 	std::vector<unsigned int> indices;
-	unsigned int texture;
 
 public:
+	Mesh();
 	void write_mesh(aiMesh* _mesh);
 	std::vector<glm::vec4> read_verts() const { return verts;  }
 	std::vector<glm::vec4> read_norms() const { return norms; }

@@ -10,30 +10,28 @@ Scene::Scene(int _width, int _height)
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
-	
+	glfwMakeContextCurrent(window);
 }
 
 
 void Scene::write_models()
 {
-	// TODO: Search for all .obj files which are models
+	models.emplace_back(Model(std::string("res/models/Bus.obj")));
 	
-	models.emplace_back(Model("res/models/Sting-Sword-lowpoly.obj"));
-	
+	models[0].loadModel();
 }
 
 
-void Scene::draw_scene() const
+void Scene::draw_scene(float angle_x, float angle_y) const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// TODO: draw each model
-	for (int i = 0; i < models.size(); i++)
+	for (const auto& model : models)
 	{
-		models[i].draw_model();
+		model.draw_model(angle_x, angle_y);
 	}
 	
-	glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr);
 	glfwSwapBuffers(window);
 }
+
 
