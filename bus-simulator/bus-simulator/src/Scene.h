@@ -11,7 +11,7 @@ class Scene
 private:
 	GLFWwindow* window;
 	std::vector<Model> models;
-	
+
 
 public:
 	Scene(int _width, int _height);

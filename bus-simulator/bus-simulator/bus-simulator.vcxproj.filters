@@ -21,9 +21,6 @@
     <ClCompile Include="src\Model.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mesh.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
     <ClCompile Include="src\Scene.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
@@ -36,9 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Model.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Mesh.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene.h">
@@ -59,6 +53,9 @@
       <Filter>Pliki zasobów</Filter>
     </Image>
     <Image Include="res\textures\Bus_tex.tga.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\df.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
   </ItemGroup>

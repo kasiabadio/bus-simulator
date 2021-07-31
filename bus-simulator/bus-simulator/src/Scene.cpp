@@ -1,7 +1,7 @@
 #include "Scene.h"
 
 
-Scene::Scene(int _width, int _height)	
+Scene::Scene(int _width, int _height)
 {
 	window = glfwCreateWindow(_width, _height, "bus-simulator", NULL, NULL);
 	if (!window)
@@ -16,9 +16,9 @@ Scene::Scene(int _width, int _height)
 
 void Scene::write_models()
 {
-	models.emplace_back(Model(std::string("res/models/Bus.obj")));
-	
-	models[0].loadModel();
+	models.emplace_back(Model(std::string("res/models/Sting-Sword-lowpoly.obj")));
+
+	models[0].read_model();
 }
 
 
@@ -30,8 +30,6 @@ void Scene::draw_scene(float angle_x, float angle_y) const
 	{
 		model.draw_model(angle_x, angle_y);
 	}
-	
+
 	glfwSwapBuffers(window);
 }
-
-

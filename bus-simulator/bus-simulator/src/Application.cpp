@@ -1,5 +1,4 @@
 
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -57,32 +56,32 @@ void key_callback(
 
 int main(void)
 {
-  
+
 	glfwSetErrorCallback(error_callback);
 
 	if (!glfwInit())
 		return -1;
-	
-    Scene scene(1000, 1000);
-	
+
+	Scene scene(1000, 1000);
+
 	glfwSwapInterval(1);
 
 	if (glewInit() != GLEW_OK)
 	{
 		std::cout << "Error: glewInit()" << std::endl;
 	}
-	
-	
+
+
 	initShaders();
 	glClearColor(1, 0, 0.25f, 1);
 	glfwSetKeyCallback(scene.read_window(), key_callback);
 	glEnable(GL_DEPTH_TEST);
-	
+
 	scene.write_models();
 	float angle_x = 0;
 	float angle_y = 0;
 	glfwSetTime(0);
-	while(!glfwWindowShouldClose(scene.read_window()))
+	while (!glfwWindowShouldClose(scene.read_window()))
 	{
 		angle_x += speed_x * glfwGetTime();
 		angle_y += speed_y * glfwGetTime();
@@ -92,6 +91,6 @@ int main(void)
 	}
 
 	freeShaders();
-    glfwTerminate();
-    return 0;
+	glfwTerminate();
+	return 0;
 }
