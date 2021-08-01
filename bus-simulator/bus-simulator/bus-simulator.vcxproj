@@ -225,18 +225,21 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\lodepng.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lodepng.h" />
+    <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\bricks.png" />
+    <Image Include="res\textures\bus.png" />
     <Image Include="res\textures\Bus_tex.tga.png" />
     <Image Include="res\textures\df.png" />
     <Image Include="res\textures\Sting_Base_Color.png" />

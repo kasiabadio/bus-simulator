@@ -30,6 +30,9 @@
     <ClCompile Include="src\lodepng.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Model.h">
@@ -44,6 +47,9 @@
     <ClInclude Include="src\lodepng.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="src\Mesh.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\Sting_Base_Color.png">
@@ -56,6 +62,9 @@
       <Filter>Pliki zasobów</Filter>
     </Image>
     <Image Include="res\textures\df.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\bus.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
   </ItemGroup>
