@@ -16,10 +16,9 @@ void Mesh::draw_mesh(glm::mat4 P, glm::mat4 V, glm::mat4 M, Mesh& _mesh, const G
 
 	glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M));
 
-
 	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, _mesh.mesh_verts.data());
-	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, _mesh.mesh_norms.data());
-	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, _mesh.mesh_texture_coordinates.data());
+	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, _mesh.mesh_texture_coordinates.data());
+	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, _mesh.mesh_norms.data());
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _tex);

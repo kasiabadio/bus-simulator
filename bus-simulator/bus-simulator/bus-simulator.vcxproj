@@ -239,9 +239,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\bricks.png" />
-    <Image Include="res\textures\bus.png" />
     <Image Include="res\textures\Bus_tex.tga.png" />
-    <Image Include="res\textures\df.png" />
     <Image Include="res\textures\Sting_Base_Color.png" />
   </ItemGroup>
   <ItemGroup>
