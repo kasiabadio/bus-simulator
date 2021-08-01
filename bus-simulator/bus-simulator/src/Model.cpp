@@ -3,13 +3,13 @@
 
 Assimp::Importer importer;
 
-Model::Model(std::string filepath) :
-	scene(importer.ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes))
+Model::Model(const char* model_file, const char* model_texture) :
+	scene(importer.ReadFile(model_file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes))
 
 {
-	std::cout << "Reading ... " << filepath << std::endl;
+	std::cout << "Reading ... " << model_file << std::endl;
 	// Read texture (one for each model for now)
-	tex = read_model_texture("res/textures/Sting_Base_Color.png");
+	tex = read_model_texture(model_texture);
 }
 
 

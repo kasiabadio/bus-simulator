@@ -32,7 +32,7 @@ private:
 public:
 
 	std::vector<Mesh> meshes;
-	Model(std::string filepath);
+	Model(const char* model_file, const char* model_texture);
 	void read_model(); // The result is vector of meshes
 	GLuint read_model_texture(const char* filename);
 

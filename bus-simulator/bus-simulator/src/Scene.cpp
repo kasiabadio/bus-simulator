@@ -16,10 +16,17 @@ Scene::Scene(int _width, int _height)
 
 void Scene::write_models()
 {
-	// Read aiScene* scene and assign it to the filepath; read texture for a model
-	models.emplace_back(Model(std::string("res/models/Sting-Sword-lowpoly.obj")));
-	// Now as the aiScene* scene is initialized, read meshes into models' vector
+	// Sword
+	models.emplace_back(Model("res/models/Sting-Sword-lowpoly.obj", "res/textures/Sting_Base_Color.png"));
 	models[0].read_model();
+
+	// Bus
+	models.emplace_back(Model("res/models/Bus.obj", "res/textures/Bus_tex.tga.png"));
+	models[1].read_model();
+
+	// Grass
+	models.emplace_back(Model("res/models/grass.obj", "res/textures/grass.png"));
+	models[2].read_model();
 }
 
 
