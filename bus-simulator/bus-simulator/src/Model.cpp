@@ -1,7 +1,18 @@
 ﻿#include "Model.h"
 
-
+#include <functional>
 Assimp::Importer importer;
+
+
+Input::Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene):
+	angle_x(angle_x), angle_y(angle_y), P_scene(P_scene), V_scene(V_scene), M_scene(M_scene)
+{}
+
+
+Input::Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene):
+	angle_x(0.0f), angle_y(0.0f), P_scene(P_scene), V_scene(V_scene), M_scene(M_scene)
+{}
+
 
 Model::Model(const char* model_file, const char* model_texture) :
 	scene(importer.ReadFile(model_file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes))
@@ -87,19 +98,20 @@ GLuint Model::read_model_texture(const char* filename) {
 }
 
 
-
-void Model::draw_model(float angle_x, float angle_y) const
+void Bus::draw_model(const Input& in)
 {
-	// Define matrices
+	glm::mat4 P = glm::mat4(1.0f);
+	glm::mat4 V = glm::mat4(1.0f);
 	glm::mat4 M = glm::mat4(1.0f);
-
-	M = glm::rotate(M, angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
-	M = glm::rotate(M, angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
-	M = glm::scale(M, glm::vec3(0.09f, 0.09f, 0.09));
-
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 P = glm::perspective(glm::radians(45.0f), 1.0f, 1.0f, 100.0f);
-
+	
+	P = P * in.P_scene;
+	V = V * in.V_scene;
+	
+	
+	M = glm::rotate(M, in.angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
+	M = glm::rotate(M, in.angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::scale(M, glm::vec3(0.009f, 0.009f, 0.009));
+	
 	// Draw all meshes from meshes vector
 	for (int i = 0; i < meshes.size(); i++)
 	{
@@ -108,3 +120,27 @@ void Model::draw_model(float angle_x, float angle_y) const
 	}
 
 }
+
+
+void Grass::draw_model(const Input &in)
+{
+	glm::mat4 P = glm::mat4(1.0f);
+	glm::mat4 V = glm::mat4(1.0f);
+	glm::mat4 M = glm::mat4(1.0f);
+	
+	P = P * in.P_scene;
+	V = V * in.V_scene;
+	
+
+	M = glm::translate(M, glm::vec3(0.0f, -1.0f, 0.0f));
+	M = glm::rotate(M, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::scale(M, glm::vec3(0.1f, 0.1f, 0.1));
+	
+	// Draw all meshes from meshes vector
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		Mesh temp_mesh = meshes[i];
+		meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
+	}
+}
+
