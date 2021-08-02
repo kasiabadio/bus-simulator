@@ -5,26 +5,25 @@ Assimp::Importer importer;
 
 
 Input::Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene):
-	angle_x(angle_x), angle_y(angle_y), P_scene(P_scene), V_scene(V_scene), M_scene(M_scene)
+	angle_x(angle_x), angle_y(angle_y), P(P_scene), V(V_scene), M(M_scene)
 {}
 
 
 Input::Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene):
-	angle_x(0.0f), angle_y(0.0f), P_scene(P_scene), V_scene(V_scene), M_scene(M_scene)
+	angle_x(0.0f), angle_y(0.0f), P(P_scene), V(V_scene), M(M_scene)
 {}
 
 
 Model::Model(const char* model_file, const char* model_texture) :
 	scene(importer.ReadFile(model_file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes))
-
 {
 	std::cout << "Reading ... " << model_file << std::endl;
 	// Read texture (one for each model for now)
-	tex = read_model_texture(model_texture);
+	tex = write_model_texture(model_texture);
 }
 
 
-void Model::read_model()
+void Model::write_model()
 {
 
 	std::cout << "Number of meshes in a model: " << scene->mNumMeshes << std::endl;
@@ -70,7 +69,14 @@ void Model::read_model()
 }
 
 
-GLuint Model::read_model_texture(const char* filename) {
+Input Model::read_model_matrices()
+{
+	return Input(P, V, M);
+}
+
+
+GLuint Model::write_model_texture(const char* filename)
+{
 
 	GLuint tex;
 	// Activate texture 0
@@ -100,17 +106,18 @@ GLuint Model::read_model_texture(const char* filename) {
 
 void Bus::draw_model(const Input& in)
 {
-	glm::mat4 P = glm::mat4(1.0f);
-	glm::mat4 V = glm::mat4(1.0f);
-	glm::mat4 M = glm::mat4(1.0f);
 	
-	P = P * in.P_scene;
-	V = V * in.V_scene;
+	this->P = glm::mat4(1.0f);
+	this->V = glm::mat4(1.0f);
+	this->M = glm::mat4(1.0f);
+	
+	P = in.P;
+	V = in.V;
 	
 	
 	M = glm::rotate(M, in.angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
 	M = glm::rotate(M, in.angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
-	M = glm::scale(M, glm::vec3(0.009f, 0.009f, 0.009));
+	M = glm::scale(M, glm::vec3(0.009f, 0.009f, 0.009f));
 	
 	// Draw all meshes from meshes vector
 	for (int i = 0; i < meshes.size(); i++)
@@ -119,22 +126,24 @@ void Bus::draw_model(const Input& in)
 		meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
 	}
 
+	
+	
 }
 
 
 void Grass::draw_model(const Input &in)
 {
-	glm::mat4 P = glm::mat4(1.0f);
-	glm::mat4 V = glm::mat4(1.0f);
-	glm::mat4 M = glm::mat4(1.0f);
+	this->P = glm::mat4(1.0f);
+	this->V = glm::mat4(1.0f);
+	this->M = glm::mat4(1.0f);
 	
-	P = P * in.P_scene;
-	V = V * in.V_scene;
+	P = in.P;
+	V = in.V;
 	
 
-	M = glm::translate(M, glm::vec3(0.0f, -1.0f, 0.0f));
+	//M = glm::translate(M, glm::vec3(0.0f, -1.0f, 0.0f));
 	M = glm::rotate(M, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	M = glm::scale(M, glm::vec3(0.1f, 0.1f, 0.1));
+	M = glm::scale(M, glm::vec3(0.1f, 0.1f, 0.1f));
 	
 	// Draw all meshes from meshes vector
 	for (int i = 0; i < meshes.size(); i++)

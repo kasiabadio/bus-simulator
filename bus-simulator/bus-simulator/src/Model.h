@@ -19,13 +19,15 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
-class Input {
+class Input
+{
 public:
 	float angle_x;
 	float angle_y;
-	glm::mat4 P_scene;
-	glm::mat4 V_scene;
-	glm::mat4 M_scene;
+	glm::mat4 P;
+	glm::mat4 V;
+	glm::mat4 M;
+	
 	Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene);
 	Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene);
 	
@@ -38,15 +40,18 @@ protected:
 	const aiScene* scene;
 	GLuint tex;
 
-
 public:
 
 	std::vector<Mesh> meshes;
-	Model(const char* model_file, const char* model_texture);
-	void read_model(); // The result is vector of meshes
-	GLuint read_model_texture(const char* filename);
+	glm::mat4 M;
+	glm::mat4 V;
+	glm::mat4 P;
 	
+	Model(const char* model_file, const char* model_texture);
+	void write_model(); 
 	virtual void draw_model(const Input& in) = 0;
+	Input read_model_matrices();
+	GLuint write_model_texture(const char* filename);
 	GLuint read_tex() const { return tex; }
 };
 
@@ -54,6 +59,7 @@ public:
 class Bus: public Model
 {
 public:
+	
 	
 	using Model::Model; // Constructor inheritance
 	void draw_model(const Input& in) override;
