@@ -25,14 +25,14 @@ void Scene::write_models()
 	models[0]->write_model();
 	
 	// Grass
-	models.emplace_back(new Grass("res/models/grass.obj", "res/textures/grass.png"));
-	models[1]->write_model();
+	//models.emplace_back(new Grass("res/models/grass.obj", "res/textures/grass.png"));
+	//models[1]->write_model();
 
 	
 }
 
 
-void Scene::draw_scene(float angle_x, float angle_y) const
+void Scene::draw_scene(float angle_x, float angle_y, Terrain &terrain) const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glm::mat4 M_scene = glm::mat4(1.0f);
@@ -48,7 +48,7 @@ void Scene::draw_scene(float angle_x, float angle_y) const
 	//M_scene = glm::rotate(M_scene, glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// Draw terrain
-	Terrain terrain("res/textures/grass.png", 6, 6);
+	
 	terrain.draw_terrain(Input(P_scene, V_scene, M_scene));
 	
 	// Draw grass
@@ -57,7 +57,7 @@ void Scene::draw_scene(float angle_x, float angle_y) const
 	
 	// Draw bus on the grass (it is relative to it, that is why we are reading model's matrices)
 	//models[0]->draw_model(Input(angle_x, angle_y, models[1]->read_model_matrices().P, models[1]->read_model_matrices().V, models[1]->read_model_matrices().M));
-	
+	models[0]->draw_model(Input(angle_x, angle_y, terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
 	
 	
 	glfwSwapBuffers(window);

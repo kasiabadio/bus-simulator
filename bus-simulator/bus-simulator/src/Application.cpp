@@ -73,11 +73,12 @@ int main(void)
 
 
 	initShaders();
-	glClearColor(1, 0, 0.25f, 1);
+	glClearColor(0.529f, 0.807f, 0.921f, 1);
 	glfwSetKeyCallback(scene.read_window(), key_callback);
 	glEnable(GL_DEPTH_TEST);
 
 	scene.write_models();
+	Terrain terrain("res/textures/grass.png", 6, 6);
 	float angle_x = 0;
 	float angle_y = 0;
 	glfwSetTime(0);
@@ -86,7 +87,7 @@ int main(void)
 		angle_x += speed_x * glfwGetTime();
 		angle_y += speed_y * glfwGetTime();
 		glfwSetTime(0);
-		scene.draw_scene(angle_x, angle_y);
+		scene.draw_scene(angle_x, angle_y, terrain);
 		glfwPollEvents();
 	}
 

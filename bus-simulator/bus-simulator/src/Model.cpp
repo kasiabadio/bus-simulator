@@ -174,9 +174,10 @@ void Terrain::draw_terrain(const Input& in)
 	P = in.P;
 	V = in.V;
 
-	//M = glm::translate(M, glm::vec3(-1.0f, -1.0f, 0.0f));
+	
 	M = glm::rotate(M, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	M = glm::scale(M, glm::vec3(1.0f, 1.0f, 1.0f));
+	M = glm::translate(M, glm::vec3(-10.0f, -5.0f, 0.0f));
+	M = glm::scale(M, glm::vec3(10.0f, 10.0f, 10.0f));
 	
 	for (int row = 0; row < terrain_height; row++)
 	{
