@@ -64,6 +64,9 @@
     <Image Include="res\textures\grass.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="res\textures\Green_Screen.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\f_colored.glsl" />

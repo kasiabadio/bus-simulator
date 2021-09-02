@@ -241,6 +241,7 @@
     <Image Include="res\textures\bricks.png" />
     <Image Include="res\textures\Bus_tex.tga.png" />
     <Image Include="res\textures\grass.png" />
+    <Image Include="res\textures\Green_Screen.png" />
     <Image Include="res\textures\Sting_Base_Color.png" />
   </ItemGroup>
   <ItemGroup>

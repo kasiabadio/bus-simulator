@@ -12,16 +12,11 @@ private:
 	GLFWwindow* window;
 	std::vector<Model*> models;
 
-
 public:
-	
 	Scene(int _width, int _height);
 	void draw_scene(float angle_x, float angle_y, Terrain& terrain) const;
 	GLFWwindow* read_window() const { return window; }
 	void write_models();
 	
-
 };
-
-
 #endif

@@ -25,14 +25,14 @@ void Scene::write_models()
 	models[0]->write_model();
 	
 	// Grass
-	//models.emplace_back(new Grass("res/models/grass.obj", "res/textures/grass.png"));
-	//models[1]->write_model();
+	models.emplace_back(new Grass("res/models/grass.obj", "res/textures/grass.png"));
+	models[1]->write_model();
 
 	
 }
 
 
-void Scene::draw_scene(float angle_x, float angle_y, Terrain &terrain) const
+void Scene::draw_scene(float angle_x, float angle_y, Terrain& terrain) const
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glm::mat4 M_scene = glm::mat4(1.0f);
@@ -42,13 +42,12 @@ void Scene::draw_scene(float angle_x, float angle_y, Terrain &terrain) const
 	
 	V_scene = glm::lookAt(
 		glm::vec3(0.0f, 4.0f, 15.0f),
-		glm::vec3(0.0f, 0.0f, -0.5f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 20.0f, 0.0f));
 	P_scene = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
 	//M_scene = glm::rotate(M_scene, glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// Draw terrain
-	
 	terrain.draw_terrain(Input(P_scene, V_scene, M_scene));
 	
 	// Draw grass
