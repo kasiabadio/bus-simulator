@@ -14,7 +14,7 @@ Input::Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene):
 {}
 
 
-Model::Model(const char* model_file, const char* model_texture) :
+Model::Model(const char* model_file, const char* model_texture):
 	scene(importer.ReadFile(model_file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes))
 {
 	std::cout << "Reading ... " << model_file << std::endl;
@@ -153,3 +153,143 @@ void Grass::draw_model(const Input &in)
 	}
 }
 
+
+//////////////////////////////
+
+Terrain::Terrain(const char* model_texture, int height, int width):
+	terrain_height(height), terrain_width(width)
+{
+	tex = write_model_texture(model_texture);
+	std::cout << "Read terrain texture ..." << std::endl;
+}
+
+
+void Terrain::draw_terrain(const Input& in)
+{
+
+	this->P = glm::mat4(1.0f);
+	this->V = glm::mat4(1.0f);
+	this->M = glm::mat4(1.0f);
+
+	P = in.P;
+	V = in.V;
+
+	//M = glm::translate(M, glm::vec3(-1.0f, -1.0f, 0.0f));
+	M = glm::rotate(M, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::scale(M, glm::vec3(1.0f, 1.0f, 1.0f));
+	
+	for (int row = 0; row < terrain_height; row++)
+	{
+		int col;
+		// adding a row of vertices
+		for (col = 0; col < terrain_width; col++) {
+			// x, y, z, 1
+			terrain_verts.emplace_back(col, row, 0.0f, 1);
+
+		}
+
+		// adding a row of indices
+		for (col = 0; col < terrain_width; col++)
+		{
+			terrain_indices.emplace_back(col + row * terrain_width);
+			terrain_indices.emplace_back(col + row * terrain_width + 1);
+			terrain_indices.emplace_back(col + terrain_width * (row + 1) - 1);
+		}
+
+		for (col = terrain_width - 1; col >= 0; col--)
+		{
+			terrain_indices.emplace_back(col + row * terrain_width);
+			terrain_indices.emplace_back(col + terrain_width * (row + 1) - 1);
+			terrain_indices.emplace_back(col + terrain_width * (row + 1));
+		}
+
+		// adding a row of texture coordinates
+		if (row % 2 == 0)
+		{
+			for (col = 0; col < terrain_width; col += 2)
+			{
+				terrain_texture_coordinates.emplace_back(0, 0);
+				terrain_texture_coordinates.emplace_back(1, 0);
+			}
+			
+		}
+		else
+		{
+			for (col = 0; col < terrain_width; col += 2)
+			{
+				terrain_texture_coordinates.emplace_back(0, 1);
+				terrain_texture_coordinates.emplace_back(1, 1);
+			}
+		}
+	}
+
+	spLambertTextured->use();
+	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
+	glEnableVertexAttribArray(spLambertTextured->a("vertex"));
+	glEnableVertexAttribArray(spLambertTextured->a("texCoord"));
+	glEnableVertexAttribArray(spLambertTextured->a("normal"));
+
+	glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M));
+
+	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, terrain_verts.data());
+	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, terrain_texture_coordinates.data());
+	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, terrain_norms.data());
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glUniform1i(spLambertTextured->u("tex"), 0);
+
+	glDrawElements(GL_TRIANGLES, terrain_indices_count(), GL_UNSIGNED_INT, terrain_indices.data());
+
+	glDisableVertexAttribArray(spLambertTextured->a("vertex"));
+	glDisableVertexAttribArray(spLambertTextured->a("color"));
+	glDisableVertexAttribArray(spLambertTextured->a("normal"));
+
+}
+
+Input Terrain::read_model_matrices()
+{
+	return Input(P, V, M);
+}
+
+
+int Terrain::terrain_indices_count() const
+{
+	return terrain_height * terrain_width * 3;
+}
+
+
+int Terrain::terrain_vertices_count() const
+{
+	return (terrain_width * terrain_height) + (terrain_width - 1) * (terrain_height - 2);
+}
+
+
+GLuint Terrain::write_model_texture(const char* filename)
+{
+
+	GLuint tex;
+	// Activate texture 0
+	glActiveTexture(GL_TEXTURE0);
+
+	// Read into computers memory
+	std::vector<unsigned char> image;
+	unsigned width, height;
+
+	// Read the image
+	unsigned error = lodepng::decode(image, width, height, filename);
+
+	// Import to graphics card memory
+	glGenTextures(1, &tex);						//Initialize one handle
+	glBindTexture(GL_TEXTURE_2D, tex); //Activate handle
+
+	// Copy image to graphics cards memory represented by the active handle
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	return tex;
+}

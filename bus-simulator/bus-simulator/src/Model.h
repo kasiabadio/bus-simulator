@@ -19,6 +19,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
+
 class Input
 {
 public:
@@ -59,8 +60,6 @@ public:
 class Bus: public Model
 {
 public:
-	
-	
 	using Model::Model; // Constructor inheritance
 	void draw_model(const Input& in) override;
 	
@@ -70,9 +69,36 @@ public:
 class Grass: public Model
 {
 public:
-	
 	using Model::Model;
 	void draw_model(const Input& in) override;
+};
+
+
+//////////////////////////////
+class Terrain
+{
+public:
+	const aiScene* scene;
+	Terrain(const char* model_texture, int height, int width);
+	GLuint tex;
+	glm::mat4 M;
+	glm::mat4 V;
+	glm::mat4 P;
+
+	int terrain_height;
+	int terrain_width;
+	std::vector<glm::vec4> terrain_verts;
+	std::vector<glm::vec4> terrain_norms;
+	std::vector<glm::vec2> terrain_texture_coordinates;
+	std::vector<unsigned int> terrain_indices;
+
+	
+	void draw_terrain(const Input& in);
+	Input read_model_matrices();
+	int terrain_indices_count() const;
+	int terrain_vertices_count() const;
+	GLuint write_model_texture(const char* filename);
+	GLuint read_tex() const { return tex; }
 };
 
 
