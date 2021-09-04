@@ -174,7 +174,7 @@ Terrain::Terrain(const char* model_texture, int height, int width):
 
 			//std::cout << random_num << std::endl;
 			terrain_verts.emplace_back(col, row, 0, 1);
-			terrain_norms.emplace_back(0, 0, 1, 0);
+			terrain_norms.emplace_back(0, 1, 0, 0);
 			//std::cout << col << " " << row << std::endl;
 		}
 
@@ -245,28 +245,28 @@ void Terrain::draw_terrain(const Input& in)
 	M = glm::translate(M, glm::vec3(-10.0f, -5.0f, 0.0f));
 	M = glm::scale(M, glm::vec3(5.0f, 5.0f, 5.0f));
 	
-	spTextured->use();
-	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V));
-	glEnableVertexAttribArray(spTextured->a("vertex"));
-	glEnableVertexAttribArray(spTextured->a("texCoord"));
-	glEnableVertexAttribArray(spTextured->a("normal"));
+	spLambertTextured->use();
+	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
+	glEnableVertexAttribArray(spLambertTextured->a("vertex"));
+	glEnableVertexAttribArray(spLambertTextured->a("texCoord"));
+	glEnableVertexAttribArray(spLambertTextured->a("normal"));
 
-	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M));
+	glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M));
 
-	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, terrain_verts.data());
-	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, terrain_texture_coordinates.data());
-	glVertexAttribPointer(spTextured->a("normal"), 4, GL_FLOAT, false, 0, terrain_norms.data());
+	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, terrain_verts.data());
+	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, terrain_texture_coordinates.data());
+	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, terrain_norms.data());
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex);
-	glUniform1i(spTextured->u("tex"), 0);
+	glUniform1i(spLambertTextured->u("tex"), 0);
 
 	glDrawElements(GL_TRIANGLES, terrain_indices_count(), GL_UNSIGNED_INT, terrain_indices.data());
 
-	glDisableVertexAttribArray(spTextured->a("vertex"));
-	glDisableVertexAttribArray(spTextured->a("color"));
-	glDisableVertexAttribArray(spTextured->a("normal"));
+	glDisableVertexAttribArray(spLambertTextured->a("vertex"));
+	glDisableVertexAttribArray(spLambertTextured->a("color"));
+	glDisableVertexAttribArray(spLambertTextured->a("normal"));
 
 }
 
