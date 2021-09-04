@@ -86,7 +86,7 @@ int main(void)
 	glFogfv(GL_FOG_COLOR, color);
 
 	scene.write_models();
-	Terrain terrain("res/textures/grass.png", 4, 4);
+	Terrain terrain("res/textures/grass.png", 29, 30);
 	
 	float angle_x = 0;
 	float angle_y = 0;

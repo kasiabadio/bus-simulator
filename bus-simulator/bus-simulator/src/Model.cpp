@@ -164,6 +164,7 @@ Terrain::Terrain(const char* model_texture, int height, int width):
 	tex = write_model_texture(model_texture);
 	std::cout << "Read terrain texture ..." << std::endl;
 
+
 	for (int row = 0; row < terrain_height; row++)
 	{
 		int col;
@@ -183,9 +184,11 @@ Terrain::Terrain(const char* model_texture, int height, int width):
 			terrain_indices.emplace_back(col + row * terrain_width);
 			terrain_indices.emplace_back(col + row * terrain_width + 1);
 			terrain_indices.emplace_back(col + terrain_width * (row + 1));
-			/*std::cout << col + row * terrain_width << " " <<
+
+			/*std::cout << "BLUE INDICES" << std::endl;
+			std::cout << col + row * terrain_width << " " <<
 				col + row * terrain_width + 1 << " " <<
-				col + terrain_width * (row + 1) - 1 << std::endl;*/
+				col + terrain_width * (row + 1) << std::endl;*/
 		}
 
 		for (col = terrain_width - 1; col > 0; col--)
@@ -193,7 +196,10 @@ Terrain::Terrain(const char* model_texture, int height, int width):
 			terrain_indices.emplace_back(col + row * terrain_width);
 			terrain_indices.emplace_back(col + terrain_width * (row + 1) - 1);
 			terrain_indices.emplace_back(col + terrain_width * (row + 1));
-			/*std::cout << col + row * terrain_width << " " <<
+
+
+			/*std::cout << "GREEN INDICES" << std::endl;
+			std::cout << col + row * terrain_width << " " <<
 				col + terrain_width * (row + 1) - 1 << " " <<
 				col + terrain_width * (row + 1) << std::endl;*/
 		}
@@ -218,7 +224,9 @@ Terrain::Terrain(const char* model_texture, int height, int width):
 			}
 		}
 	}
-	std::cout << terrain_verts.size() << std::endl;
+	/*std::cout << terrain_verts.size() << std::endl;
+	std::cout << terrain_texture_coordinates.size() << std::endl;*/
+
 }
 
 
@@ -233,9 +241,9 @@ void Terrain::draw_terrain(const Input& in)
 	V = in.V;
 
 	
-	//M = glm::rotate(M, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	M = glm::translate(M, glm::vec3(-5.0f, -5.0f, 0.0f));
-	//M = glm::scale(M, glm::vec3(10.0f, 10.0f, 10.0f));
+	M = glm::rotate(M, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::translate(M, glm::vec3(-10.0f, -5.0f, 0.0f));
+	M = glm::scale(M, glm::vec3(5.0f, 5.0f, 5.0f));
 	
 	spTextured->use();
 	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P));
