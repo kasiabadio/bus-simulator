@@ -18,11 +18,7 @@
 float speed_x = 0;//[radians/s]
 float speed_y = 0;//[radians/s]
 
-GLint fog_hint = GL_DONT_CARE;
-GLfloat fog_start = 3.0;
-GLfloat fog_end = 5.0;
-GLfloat fog_density = 0.5;
-GLfloat fog_mode = GL_LINEAR;
+
 
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
@@ -79,24 +75,19 @@ int main(void)
 
 
 	initShaders();
-	glClearColor(0.529f, 0.807f, 0.921f, 1);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glfwSetKeyCallback(scene.read_window(), key_callback);
-	glEnable(GL_DEPTH_TEST);
+	
+	glEnable(GL_DEPTH_TEST | GL_FOG);
+	glFogf(GL_FOG_MODE, GL_LINEAR);
+	glFogf(GL_FOG_START, 1.0f);
+	glFogf(GL_FOG_END, 5.0f);
+	float color[] = {0.5f, 0.5f, 0.5f, 1.0f}; // gray fog same as clear color
+	glFogfv(GL_FOG_COLOR, color);
 
-	/*
-	 glEnable(GL_FOG);
-	glHint(GL_FOG_HINT, fog_hint);
-	glFogfv(GL_FOG_COLOR, White);
-	glFogf(GL_FOG_DENSITY, fog_density);
-	glFogf(GL_FOG_MODE, fog_mode);
-	glFogf(GL_FOG_START, fog_start);
-	glFogf(GL_FOG_END, fog_end);
-	
-	 */
-	
-	
 	scene.write_models();
-	Terrain terrain("res/textures/grass.png", 10, 10);
+	Terrain terrain("res/textures/grass.png", 4, 4);
+	
 	float angle_x = 0;
 	float angle_y = 0;
 	glfwSetTime(0);
@@ -106,12 +97,12 @@ int main(void)
 		angle_y += speed_y * glfwGetTime();
 		glfwSetTime(0);
 		scene.draw_scene(angle_x, angle_y, terrain);
-		//scene.draw_scene(angle_x, angle_y);
 		glfwPollEvents();
 	}
-
+	
+	glDisable(GL_FOG);
 	freeShaders();
-	//glDisable(GL_FOG);
+	
 	glfwTerminate();
 	return 0;
 }

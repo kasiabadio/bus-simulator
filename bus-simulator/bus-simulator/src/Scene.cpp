@@ -1,8 +1,6 @@
 #include "Scene.h"
 
 
-
-
 Scene::Scene(int _width, int _height)
 {
 	window = glfwCreateWindow(_width, _height, "bus-simulator", NULL, NULL);
@@ -56,7 +54,7 @@ void Scene::draw_scene(float angle_x, float angle_y, Terrain& terrain) const
 	
 	// Draw bus on the grass (it is relative to it, that is why we are reading model's matrices)
 	//models[0]->draw_model(Input(angle_x, angle_y, models[1]->read_model_matrices().P, models[1]->read_model_matrices().V, models[1]->read_model_matrices().M));
-	models[0]->draw_model(Input(angle_x, angle_y, terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
+	//models[0]->draw_model(Input(angle_x, angle_y, terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
 	
 	
 	glfwSwapBuffers(window);
