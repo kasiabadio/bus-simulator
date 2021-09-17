@@ -19,18 +19,28 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
+struct Move
+{
+	std::vector<glm::vec3> translate_vectors;
+	std::vector<glm::vec3> rotate_vectors;
+	std::vector<float> rotate_angles;
+	std::vector<glm::vec3> scale_vectors;
+};
+
 
 class Input
 {
 public:
 	float angle_x;
 	float angle_y;
+	
 	glm::mat4 P;
 	glm::mat4 V;
 	glm::mat4 M;
 	
-	Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene);
-	Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene);
+	 
+	Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene); // to move the bus
+	Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene); 
 	
 };
 
@@ -47,10 +57,14 @@ public:
 	glm::mat4 M;
 	glm::mat4 V;
 	glm::mat4 P;
+
+	std::vector<Move> moves;
 	
 	Model(const char* model_file, const char* model_texture);
 	void write_model(); 
 	virtual void draw_model(const Input& in) = 0;
+	virtual void write_model_static_transformations() = 0;
+	
 	Input read_model_matrices();
 	GLuint write_model_texture(const char* filename);
 	GLuint read_tex() const { return tex; }
@@ -62,15 +76,25 @@ class Bus: public Model
 public:
 	using Model::Model; // Constructor inheritance
 	void draw_model(const Input& in) override;
-	
+	void write_model_static_transformations() override;
 };
 
 
-class Grass: public Model
+class Tree: public Model
+{
+public:
+	using Model::Model; // Constructor inheritance
+	void draw_model(const Input& in) override;
+	void write_model_static_transformations() override;
+};
+
+
+class Road: public Model
 {
 public:
 	using Model::Model;
 	void draw_model(const Input& in) override;
+	void write_model_static_transformations() override;
 };
 
 

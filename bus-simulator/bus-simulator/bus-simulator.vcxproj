@@ -242,6 +242,9 @@
     <Image Include="res\textures\Bus_tex.tga.png" />
     <Image Include="res\textures\grass.png" />
     <Image Include="res\textures\Green_Screen.png" />
+    <Image Include="res\textures\raw3.jpg" />
+    <Image Include="res\textures\RoadDiffuse.jpg" />
+    <Image Include="res\textures\RoadDiffuse.png" />
     <Image Include="res\textures\Sting_Base_Color.png" />
   </ItemGroup>
   <ItemGroup>
