@@ -106,9 +106,45 @@ GLuint Model::write_model_texture(const char* filename)
 }
 
 
-void Bus::write_model_static_transformations()
+void Model::draw_relative_to_terrain(const Input& in)
 {
+	this->P = glm::mat4(1.0f);
+	this->V = glm::mat4(1.0f);
+	this->M = glm::mat4(1.0f);
+	P = in.P;
+	V = in.V;
+
+	for (int m = 0; m < moves.size(); m++)
+	{
+
+		for (int t = 0; t < moves[m].translate_vectors.size(); t++)
+		{
+			M = glm::translate(M, moves[m].translate_vectors[t]);
+		}
+
+		for (int s = 0; s < moves[m].scale_vectors.size(); s++)
+		{
+			M = glm::scale(M, moves[m].scale_vectors[s]);
+		}
+
+		for (int r = 0; r < moves[m].rotate_vectors.size(); r++)
+		{
+			M = glm::rotate(M, moves[m].rotate_angles[r], moves[m].rotate_vectors[r]);
+		}
+
+		// Draw all meshes from meshes vector
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			Mesh temp_mesh = meshes[i];
+			meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
+		}
+		this->M = glm::mat4(1.0f);
+	}
 }
+
+
+void Bus::write_model_static_transformations()
+{}
 
 void Bus::draw_model(const Input& in)
 {
@@ -131,41 +167,27 @@ void Bus::draw_model(const Input& in)
 		Mesh temp_mesh = meshes[i];
 		meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
 	}
-
-	
-	
 }
+
+void Tree::draw_model(const Input& in)
+{}
 
 void Tree::write_model_static_transformations()
 {
+	Move temp_move;
+
+	temp_move.translate_vectors.emplace_back(-4.0f, 0.0f, 0.0f);
+	temp_move.rotate_vectors.emplace_back(0.0f, 1.0f, 0.0f);
+	//temp_move.rotate_angles.emplace_back(glm::radians(90.0f));
+	temp_move.scale_vectors.emplace_back(1.7f, 1.7f, 1.7f);
+	moves.push_back(temp_move);
+	clear_Move(temp_move);
+	
 }
 
 
-void Tree::draw_model(const Input& in)
-{
-
-	this->P = glm::mat4(1.0f);
-	this->V = glm::mat4(1.0f);
-	this->M = glm::mat4(1.0f);
-
-	P = in.P;
-	V = in.V;
-
-	
-	M = glm::rotate(M, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	M = glm::scale(M, glm::vec3(1.7f, 1.7f, 1.7f));
-	M = glm::translate(M, glm::vec3(4.0f, 0.0f, 0.0f));
-	
-
-	// Draw all meshes from meshes vector
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		Mesh temp_mesh = meshes[i];
-		meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
-	}
-
-}
-
+void Road::draw_model(const Input& in)
+{}
 
 void Road::write_model_static_transformations()
 {
@@ -178,10 +200,7 @@ void Road::write_model_static_transformations()
 	temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
 
 	moves.push_back(temp_move);
-	temp_move.translate_vectors.clear();
-	temp_move.rotate_vectors.clear();
-	temp_move.rotate_angles.clear();
-	temp_move.scale_vectors.clear();
+	clear_Move(temp_move);
 	
 
 	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
@@ -191,10 +210,7 @@ void Road::write_model_static_transformations()
 	temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
 
 	moves.push_back(temp_move);
-	temp_move.translate_vectors.clear();
-	temp_move.rotate_vectors.clear();
-	temp_move.rotate_angles.clear();
-	temp_move.scale_vectors.clear();
+	clear_Move(temp_move);
 	
 	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
 	temp_move.translate_vectors.emplace_back(0.0f, 0.0f, -4.0f);
@@ -203,10 +219,7 @@ void Road::write_model_static_transformations()
 	temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
 
 	moves.push_back(temp_move);
-	temp_move.translate_vectors.clear();
-	temp_move.rotate_vectors.clear();
-	temp_move.rotate_angles.clear();
-	temp_move.scale_vectors.clear();
+	clear_Move(temp_move);
 	
 	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
 	temp_move.translate_vectors.emplace_back(0.0f, 0.0f, 5.0f);
@@ -215,44 +228,16 @@ void Road::write_model_static_transformations()
 	temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
 
 	moves.push_back(temp_move);
-	temp_move.translate_vectors.clear();
-	temp_move.rotate_vectors.clear();
-	temp_move.rotate_angles.clear();
-	temp_move.scale_vectors.clear();
-
+	clear_Move(temp_move);
 }
 
-
-void Road::draw_model(const Input& in)
+void Grass::write_model_static_transformations()
 {
-
-	this->P = glm::mat4(1.0f);
-	this->V = glm::mat4(1.0f);
-	this->M = glm::mat4(1.0f);
-	P = in.P;
-	V = in.V;
-	
-	for (int m = 0; m < moves.size(); m++)
-	{
-		
-		for (int t = 0; t < moves[m].translate_vectors.size(); t++)
-		{  M = glm::translate(M, moves[m].translate_vectors[t]);  }
-		
-		for (int s = 0; s < moves[m].scale_vectors.size(); s++)
-		{  M = glm::scale(M, moves[m].scale_vectors[s]);  }
-
-		for (int r = 0; r < moves[m].rotate_vectors.size(); r++)
-		{  M = glm::rotate(M, moves[m].rotate_angles[r], moves[m].rotate_vectors[r]);  }
-
-		// Draw all meshes from meshes vector
-		for (int i = 0; i < meshes.size(); i++)
-		{
-			Mesh temp_mesh = meshes[i];
-			meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
-		}
-		this->M = glm::mat4(1.0f);
-	}
 }
+
+
+void Grass::draw_model(const Input& in)
+{}
 
 
 
@@ -414,3 +399,4 @@ GLuint Terrain::write_model_texture(const char* filename)
 
 	return tex;
 }
+

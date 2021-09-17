@@ -19,6 +19,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
+
 struct Move
 {
 	std::vector<glm::vec3> translate_vectors;
@@ -26,6 +27,15 @@ struct Move
 	std::vector<float> rotate_angles;
 	std::vector<glm::vec3> scale_vectors;
 };
+
+
+inline void clear_Move(Move& _move)
+{
+	_move.translate_vectors.clear();
+	_move.rotate_vectors.clear();
+	_move.rotate_angles.clear();
+	_move.scale_vectors.clear();
+}
 
 
 class Input
@@ -37,7 +47,6 @@ public:
 	glm::mat4 P;
 	glm::mat4 V;
 	glm::mat4 M;
-	
 	 
 	Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene); // to move the bus
 	Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene); 
@@ -63,6 +72,7 @@ public:
 	Model(const char* model_file, const char* model_texture);
 	void write_model(); 
 	virtual void draw_model(const Input& in) = 0;
+	void draw_relative_to_terrain(const Input& in);
 	virtual void write_model_static_transformations() = 0;
 	
 	Input read_model_matrices();
@@ -97,6 +107,14 @@ public:
 	void write_model_static_transformations() override;
 };
 
+
+class Grass : public Model
+{
+public:
+	using Model::Model;
+	void draw_model(const Input& in) override;
+	void write_model_static_transformations() override;
+};
 
 //////////////////////////////
 class Terrain

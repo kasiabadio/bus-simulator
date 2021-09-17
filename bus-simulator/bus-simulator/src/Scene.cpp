@@ -16,19 +16,24 @@ Scene::Scene(int _width, int _height)
 
 void Scene::write_models()
 {
+	// Road
+	models.emplace_back(new Road("res/models/Road.obj", "res/textures/RoadDiffuse.png"));
+	models[0]->write_model();
+	models[0]->write_model_static_transformations();
 	
 	// Bus
 	models.emplace_back(new Bus("res/models/Bus.obj", "res/textures/Bus_tex.tga.png"));
-	models[0]->write_model();
+	models[1]->write_model();
+
+	// Grass
 	
 	// Tree
-	//models.emplace_back(new Tree("res/models/raw2.obj", "res/textures/raw3.jpg"));
-	//models[1]->write_model();
+	//models.emplace_back(new Tree("res/models/raw2.obj", "res/textures/raw3.png"));
+	//models[2]->write_model();
+	//models[2]->write_model_static_transformations();
 
-	// Road
-	models.emplace_back(new Road("res/models/Road.obj", "res/textures/RoadDiffuse.png"));
-	models[1]->write_model();
-	models[1]->write_model_static_transformations();
+	
+	
 }
 
 
@@ -54,12 +59,13 @@ void Scene::draw_scene(float angle_x, float angle_y, Terrain& terrain) const
 	terrain.draw_terrain(Input(P_scene, V_scene, M_scene));
 
 	// DRAW ROAD
-	models[1]->draw_model(Input(terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
-
+	models[0]->draw_relative_to_terrain(Input(terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
 	
 	// DRAW BUS
-	models[0]->draw_model(Input(angle_x, angle_y, terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
+	models[1]->draw_model(Input(angle_x, angle_y, terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
 
+	// DRAW TREES
+	//models[2]->draw_model(Input(terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
 	
 	
 	glfwSwapBuffers(window);

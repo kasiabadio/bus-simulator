@@ -76,6 +76,12 @@
     <Image Include="res\textures\RoadDiffuse.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="res\textures\raw3.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\Blades of Grass.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\f_colored.glsl" />
