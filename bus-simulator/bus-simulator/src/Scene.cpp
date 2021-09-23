@@ -24,15 +24,24 @@ void Scene::write_models()
 	// Bus
 	models.emplace_back(new Bus("res/models/Bus.obj", "res/textures/Bus_tex.tga.png"));
 	models[1]->write_model();
-
-	// Grass
 	
 	// Tree
-	//models.emplace_back(new Tree("res/models/raw2.obj", "res/textures/raw3.png"));
-	//models[2]->write_model();
-	//models[2]->write_model_static_transformations();
+	models.emplace_back(new Tree("res/models/MapleTreeStem.obj", "res/textures/maple_bark.png"));
+	models[2]->write_model();
+	models[2]->write_model_static_transformations();
+	/*
+	models.emplace_back(new Tree("res/models/MapleTreeLeaves.obj", "res/textures/maple_leaf.png"));
+	models[3]->write_model();
+	models[3]->write_model_static_transformations();
+	models.emplace_back(new Tree("res/models/MapleTreeLeaves.obj", "res/textures/maple_leaf_Mask.png"));
+	models[4]->write_model();
+	models[4]->write_model_static_transformations();
+	*/
 
-	
+	// Grass
+	models.emplace_back(new Grass("res/models/grass variations.obj", "res/textures/Blades of Grass.png"));
+	models[3]->write_model();
+	models[3]->write_model_static_transformations();
 	
 }
 
@@ -65,8 +74,13 @@ void Scene::draw_scene(float angle_x, float angle_y, Terrain& terrain) const
 	models[1]->draw_model(Input(angle_x, angle_y, terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
 
 	// DRAW TREES
-	//models[2]->draw_model(Input(terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
-	
-	
+	models[2]->draw_relative_to_terrain(Input(terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
+	/*models[3]->draw_relative_to_terrain(Input(terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
+	models[4]->draw_relative_to_terrain(Input(terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
+	*/
+
+	// DRAW GRASS
+	models[3]->draw_relative_to_terrain(Input(angle_x, angle_y, terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
+
 	glfwSwapBuffers(window);
 }

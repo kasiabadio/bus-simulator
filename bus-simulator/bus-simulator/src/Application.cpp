@@ -19,10 +19,10 @@ float speed_x = 0;//[radians/s]
 float speed_y = 0;//[radians/s]
 
 
-
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
 }
+
 
 void key_callback(
 	GLFWwindow* window,

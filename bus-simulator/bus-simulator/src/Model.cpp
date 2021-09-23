@@ -1,7 +1,7 @@
 ﻿#include "Model.h"
 
 #include <functional>
-
+#include <time.h> 
 Assimp::Importer importer;
 
 
@@ -176,13 +176,30 @@ void Tree::write_model_static_transformations()
 {
 	Move temp_move;
 
-	temp_move.translate_vectors.emplace_back(-4.0f, 0.0f, 0.0f);
-	temp_move.rotate_vectors.emplace_back(0.0f, 1.0f, 0.0f);
-	//temp_move.rotate_angles.emplace_back(glm::radians(90.0f));
-	temp_move.scale_vectors.emplace_back(1.7f, 1.7f, 1.7f);
+	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
+	temp_move.scale_vectors.emplace_back(0.2f, 0.2f, 0.2f);
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
-	
+
+	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, -3.0f);
+	temp_move.scale_vectors.emplace_back(0.2f, 0.2f, 0.2f);
+	moves.push_back(temp_move);
+	clear_Move(temp_move);
+
+	temp_move.translate_vectors.emplace_back(-8.6f, 0.0f, -8.0f);
+	temp_move.scale_vectors.emplace_back(0.4f, 0.4f, 0.4f);
+	moves.push_back(temp_move);
+	clear_Move(temp_move);
+
+	temp_move.translate_vectors.emplace_back(-8.6f, 0.0f, -13.0f);
+	temp_move.scale_vectors.emplace_back(0.4f, 0.4f, 0.4f);
+	moves.push_back(temp_move);
+	clear_Move(temp_move);
+
+	temp_move.translate_vectors.emplace_back(-8.6f, 0.0f, -38.0f);
+	temp_move.scale_vectors.emplace_back(0.4f, 0.4f, 0.4f);
+	moves.push_back(temp_move);
+	clear_Move(temp_move);
 }
 
 
@@ -233,6 +250,41 @@ void Road::write_model_static_transformations()
 
 void Grass::write_model_static_transformations()
 {
+	Move temp_move;
+	srand(time(NULL));
+	float temp_z = -2.0f;
+	float temp_x = -8.0f;
+	float temp_floating = 0.0f;
+	int i;
+	for (i = 0; i < 30; i++)
+	{
+		temp_move.translate_vectors.emplace_back(temp_x + temp_floating, 0.0f, temp_z + temp_floating);
+		temp_move.scale_vectors.emplace_back(0.015f, 0.015f, 0.015f);
+
+		moves.push_back(temp_move);
+		clear_Move(temp_move);
+		// range -10.0f to -7.0f
+		temp_x = -(rand() % 7 + 7.0f);
+		temp_floating = (rand() % 100 + 1) / 100;
+		temp_z = -(rand() % 40 + 2.0f);
+		std::cout << temp_x << " " << temp_z << " " << std::endl;
+	}
+
+	for (i = 0; i < 110; i++)
+	{
+		temp_move.translate_vectors.emplace_back(temp_x + temp_floating, 0.0f, temp_z + temp_floating);
+		temp_move.scale_vectors.emplace_back(0.015f, 0.015f, 0.015f);
+		
+		moves.push_back(temp_move);
+		clear_Move(temp_move);
+		// range -14.0f to -7.0f
+		temp_x = rand() % 20 + 3.0f;
+		temp_floating = (rand() % 100 + 1) / 100;
+		temp_z = -(rand() % 60 - 20.0f);
+		std::cout << temp_x << " " << temp_z << " " << std::endl;
+	}
+
+	
 }
 
 
@@ -337,7 +389,7 @@ void Terrain::draw_terrain(const Input& in)
 	glEnableVertexAttribArray(spLambertTextured->a("normal"));
 
 	glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M));
-
+	
 	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, terrain_verts.data());
 	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, terrain_texture_coordinates.data());
 	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, terrain_norms.data());
@@ -397,6 +449,8 @@ GLuint Terrain::write_model_texture(const char* filename)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	return tex;
 }
 

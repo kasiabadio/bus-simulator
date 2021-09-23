@@ -243,6 +243,9 @@
     <Image Include="res\textures\Bus_tex.tga.png" />
     <Image Include="res\textures\grass.png" />
     <Image Include="res\textures\Green_Screen.png" />
+    <Image Include="res\textures\maple_bark.png" />
+    <Image Include="res\textures\maple_leaf.png" />
+    <Image Include="res\textures\maple_leaf_Mask.png" />
     <Image Include="res\textures\raw3.jpg" />
     <Image Include="res\textures\raw3.png" />
     <Image Include="res\textures\RoadDiffuse.jpg" />

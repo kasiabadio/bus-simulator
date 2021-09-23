@@ -82,6 +82,15 @@
     <Image Include="res\textures\Blades of Grass.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="res\textures\maple_bark.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\maple_leaf.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\maple_leaf_Mask.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\f_colored.glsl" />
