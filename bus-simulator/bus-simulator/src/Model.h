@@ -5,6 +5,9 @@
 
 #include "lodepng.h"
 #include "Mesh.h"
+#include "Utility.h"
+#include <functional>
+#include <time.h> 
 
 #include <assimp/mesh.h>
 #include <assimp/Importer.hpp>
@@ -43,13 +46,15 @@ class Input
 public:
 	float angle_x;
 	float angle_y;
+	bool czy_box;
 	
 	glm::mat4 P;
 	glm::mat4 V;
 	glm::mat4 M;
-	 
+
+	Input();
 	Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene); // to move the bus
-	Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene); 
+	Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene, bool czy_box);
 	
 };
 
@@ -68,13 +73,28 @@ public:
 	glm::mat4 P;
 
 	std::vector<Move> moves;
+	bounding_box box;
 	
+	// initial idea
+	//std::vector<struct xyz> temp_centre;
+
+	// vector which contains tree's rectangles info
+	std::vector<std::vector<struct xyz>> rectangles;
+	
+	// SAP idea
+	void rotate_around_x_rectangle(float angle, std::vector<struct xyz> &edges);
+	void rotate_around_y_rectangle(float angle, std::vector<struct xyz> &edges);
+	void rotate_around_z_rectangle(float angle, std::vector<struct xyz> &edges);
+	void scale_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges);
+	void translate_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges);
+
 	Model(const char* model_file, const char* model_texture);
 	void write_model(); 
 	virtual void draw_model(const Input& in) = 0;
 	void draw_relative_to_terrain(const Input& in);
-	virtual void write_model_static_transformations() = 0;
 	
+	virtual void write_model_static_transformations() = 0;
+
 	Input read_model_matrices();
 	GLuint write_model_texture(const char* filename);
 	GLuint read_tex() const { return tex; }
@@ -116,6 +136,7 @@ public:
 	void write_model_static_transformations() override;
 };
 
+
 //////////////////////////////
 class Terrain
 {
@@ -141,6 +162,7 @@ public:
 	int terrain_vertices_count() const;
 	GLuint write_model_texture(const char* filename);
 	GLuint read_tex() const { return tex; }
+
 };
 
 

@@ -1,0 +1,32 @@
+# Aspose.3D Wavefront OBJ Exporter
+# Copyright 2004-2021 Aspose Pty Ltd.
+# File created: 09/17/2021 15:37:18
+
+newmtl Material
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd C:\Users\camst\OneDrive\Documents\University & Collage\University\year 3\personal portfolio\modeled enviroments\Autumn Park Bench Scene\textures\autumn leaves model\Blades of Grass.png
+newmtl Material
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd C:\Users\camst\OneDrive\Documents\University & Collage\University\year 3\personal portfolio\modeled enviroments\Autumn Park Bench Scene\textures\autumn leaves model\Blades of Grass.png
+newmtl Material
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd C:\Users\camst\OneDrive\Documents\University & Collage\University\year 3\personal portfolio\modeled enviroments\Autumn Park Bench Scene\textures\autumn leaves model\Blades of Grass.png
+newmtl Material
+	Ka 0 0 0
+	Kd 1 1 1
+	d 1
+	Tr 0
+	illum 2
+	map_Kd C:\Users\camst\OneDrive\Documents\University & Collage\University\year 3\personal portfolio\modeled enviroments\Autumn Park Bench Scene\textures\autumn leaves model\Blades of Grass.png

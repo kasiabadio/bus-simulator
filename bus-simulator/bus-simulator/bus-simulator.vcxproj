@@ -229,6 +229,7 @@
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lodepng.h" />
@@ -236,6 +237,7 @@
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\Blades of Grass.png" />
@@ -250,6 +252,7 @@
     <Image Include="res\textures\raw3.png" />
     <Image Include="res\textures\RoadDiffuse.jpg" />
     <Image Include="res\textures\RoadDiffuse.png" />
+    <Image Include="res\textures\Solid_red.png" />
     <Image Include="res\textures\Sting_Base_Color.png" />
   </ItemGroup>
   <ItemGroup>

@@ -33,6 +33,9 @@
     <ClCompile Include="src\Mesh.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="src\Utility.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Model.h">
@@ -48,6 +51,9 @@
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="src\Mesh.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utility.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
@@ -89,6 +95,9 @@
       <Filter>Pliki zasobów</Filter>
     </Image>
     <Image Include="res\textures\maple_leaf_Mask.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\Solid_red.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
   </ItemGroup>

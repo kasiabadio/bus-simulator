@@ -1,17 +1,19 @@
 ﻿#include "Model.h"
 
-#include <functional>
-#include <time.h> 
+
 Assimp::Importer importer;
 
+
+Input::Input()
+{}
 
 Input::Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene):
 	angle_x(angle_x), angle_y(angle_y), P(P_scene), V(V_scene), M(M_scene)
 {}
 
 
-Input::Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene):
-	angle_x(0.0f), angle_y(0.0f), P(P_scene), V(V_scene), M(M_scene)
+Input::Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene, bool czy_box):
+	angle_x(0.0f), angle_y(0.0f), P(P_scene), V(V_scene), M(M_scene), czy_box(czy_box)
 {}
 
 
@@ -22,6 +24,25 @@ Model::Model(const char* model_file, const char* model_texture):
 	std::cout << "Reading ... " << model_file << std::endl;
 	// Read texture (one for each model for now)
 	tex = write_model_texture(model_texture);
+	std::cout << "MODEL FILE: " << model_file << std::endl;
+
+	if (strcmp(model_file, "res/models/Bus.obj") == 0)
+	{
+		box = Utility::create_box(model_file);
+		std::cout << "box created " << std::endl;
+		box.r_x *= 0.009f;
+		box.r_y *= 0.009f;
+		box.r_z *= 0.009f;
+	}
+	else if (strcmp(model_file, "res/models/MapleTreeStem.obj") == 0)
+	{
+		box = Utility::create_box(model_file);
+		std::cout << "box created " << std::endl;
+		box.r_x *= 0.3f;
+		box.r_y *= 0.3f;
+		box.r_z *= 0.3f;
+	}
+		
 }
 
 
@@ -46,7 +67,7 @@ void Model::write_model()
 			aiVector3D normal = mesh->mNormals[i];
 			temp_mesh.mesh_norms.emplace_back(normal.x, normal.y, normal.z, 0);
 
-
+			
 			aiVector3D texture_coords = mesh->mTextureCoords[0][i];
 			temp_mesh.mesh_texture_coordinates.emplace_back(texture_coords.x, texture_coords.y);
 
@@ -73,7 +94,7 @@ void Model::write_model()
 
 Input Model::read_model_matrices()
 {
-	return Input(P, V, M);
+	return Input(P, V, M, false);
 }
 
 
@@ -105,6 +126,55 @@ GLuint Model::write_model_texture(const char* filename)
 	return tex;
 }
 
+// TRANSFORMATIONS OF A RECTANGLE
+// needed for SAP
+void Model::rotate_around_x_rectangle(float angle, std::vector<struct xyz> &edges)
+{
+	for (int i = 0; i < edges.size(); i++)
+	{
+		struct xyz temp_edges = edges[i];
+		edges[i] = box.rotate_around_x(angle, temp_edges);
+	}
+}
+
+void Model::rotate_around_y_rectangle(float angle, std::vector<struct xyz> &edges)
+{
+	for (int i = 0; i < edges.size(); i++)
+	{
+		struct xyz temp_edges = edges[i];
+		edges[i] = box.rotate_around_y(angle, temp_edges);
+	}
+}
+
+void Model::rotate_around_z_rectangle(float angle, std::vector<struct xyz> &edges)
+{
+	for (int i = 0; i < edges.size(); i++)
+	{
+		struct xyz temp_edges = edges[i];
+		edges[i] = box.rotate_around_z(angle, temp_edges);
+	}
+}
+
+void Model::scale_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges)
+{
+	for (int i = 0; i < edges.size(); i++)
+	{
+		struct xyz temp_edges = edges[i];
+		edges[i] = box.scale(vector, temp_edges);
+	}
+}
+
+void Model::translate_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges)
+{
+
+	for (int i = 0; i < edges.size(); i++)
+	{
+		struct xyz temp_edges = edges[i];
+		edges[i] = box.translate(vector, temp_edges);
+	}
+}
+
+///// END OF TRANSFORMATIONS OF A RECTANGLE
 
 void Model::draw_relative_to_terrain(const Input& in)
 {
@@ -113,23 +183,52 @@ void Model::draw_relative_to_terrain(const Input& in)
 	this->M = glm::mat4(1.0f);
 	P = in.P;
 	V = in.V;
-
+	
+	//struct xyz centre_copy = box.centre;
+	std::vector<struct xyz> temp_edges_copy = box.edges;
+	
 	for (int m = 0; m < moves.size(); m++)
 	{
-
+		//struct xyz centre = centre_copy;
+		//box.centre = centre_copy;
+		
+		std::vector<struct xyz> temp_edges = temp_edges_copy;
+		box.edges = temp_edges_copy;
+		
 		for (int t = 0; t < moves[m].translate_vectors.size(); t++)
 		{
 			M = glm::translate(M, moves[m].translate_vectors[t]);
+
+			// translate centre for collision detection
+			// if (in.czy_box) centre = box.translate(moves[m].translate_vectors[t], centre);
+			
+			if (in.czy_box) translate_rectangle(moves[m].translate_vectors[t], temp_edges);
 		}
 
 		for (int s = 0; s < moves[m].scale_vectors.size(); s++)
 		{
 			M = glm::scale(M, moves[m].scale_vectors[s]);
+
+			// scale centre for collision detection
+			// if (in.czy_box) centre = box.scale(moves[m].scale_vectors[s], centre);
+			
+			if (in.czy_box) scale_rectangle(moves[m].scale_vectors[s], temp_edges);
 		}
 
 		for (int r = 0; r < moves[m].rotate_vectors.size(); r++)
 		{
 			M = glm::rotate(M, moves[m].rotate_angles[r], moves[m].rotate_vectors[r]);
+
+			// rotate centre for collision detection
+			/*
+			if (in.czy_box && moves[m].rotate_vectors[r].x != 0) centre = box.rotate_around_x(moves[m].rotate_angles[r], centre);
+			else if (in.czy_box && moves[m].rotate_vectors[r].y != 0) centre = box.rotate_around_y(moves[m].rotate_angles[r], centre);
+			else if (in.czy_box && moves[m].rotate_vectors[r].z != 0) centre = box.rotate_around_z(moves[m].rotate_angles[r], centre);
+			*/
+			
+			if (in.czy_box && moves[m].rotate_vectors[r].x != 0) rotate_around_x_rectangle(moves[m].rotate_angles[r], temp_edges);
+			else if (in.czy_box && moves[m].rotate_vectors[r].y != 0) rotate_around_y_rectangle(moves[m].rotate_angles[r], temp_edges);
+			else if (in.czy_box && moves[m].rotate_vectors[r].z != 0) rotate_around_z_rectangle(moves[m].rotate_angles[r], temp_edges);
 		}
 
 		// Draw all meshes from meshes vector
@@ -138,7 +237,16 @@ void Model::draw_relative_to_terrain(const Input& in)
 			Mesh temp_mesh = meshes[i];
 			meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
 		}
+		
+		if (in.czy_box) 
+		{
+			box.draw_bounding_box(P, V, M);
+			rectangles.emplace_back(temp_edges);
+			//temp_centre.emplace_back(centre);
+		}
+		
 		this->M = glm::mat4(1.0f);
+		
 	}
 }
 
@@ -156,7 +264,7 @@ void Bus::draw_model(const Input& in)
 	P = in.P;
 	V = in.V;
 	
-	
+	M = glm::translate(M, glm::vec3(-1.0f, 0.0f, 0.0f));
 	M = glm::rotate(M, in.angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
 	M = glm::rotate(M, in.angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
 	M = glm::scale(M, glm::vec3(0.009f, 0.009f, 0.009f));
@@ -167,6 +275,25 @@ void Bus::draw_model(const Input& in)
 		Mesh temp_mesh = meshes[i];
 		meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
 	}
+
+	box.draw_bounding_box(P, V, M);
+
+	/*
+	struct xyz centre_copy = box.centre;
+	struct xyz centre = box.translate(glm::vec3(-1.0f, 0.0f, 0.0f), centre_copy);
+	centre = box.rotate_around_y(in.angle_y, box.centre);
+	centre = box.rotate_around_x(in.angle_x, centre);
+	centre = box.scale(glm::vec3(0.009f, 0.009f, 0.009f), centre); 
+	*/
+	std::vector<struct xyz> temp_edges_copy = box.edges;
+	std::vector<struct xyz> temp_edges = temp_edges_copy;
+	translate_rectangle(glm::vec3(-1.0f, 0.0f, 0.0f), temp_edges);
+	rotate_around_y_rectangle(in.angle_y, temp_edges);
+	rotate_around_x_rectangle(in.angle_x, temp_edges);
+	scale_rectangle(glm::vec3(0.009f, 0.009f, 0.009f), temp_edges);
+
+	rectangles.emplace_back(temp_edges);
+
 }
 
 void Tree::draw_model(const Input& in)
@@ -177,27 +304,27 @@ void Tree::write_model_static_transformations()
 	Move temp_move;
 
 	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
-	temp_move.scale_vectors.emplace_back(0.2f, 0.2f, 0.2f);
+	temp_move.scale_vectors.emplace_back(0.3f, 0.3f, 0.3f);
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
 
 	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, -3.0f);
-	temp_move.scale_vectors.emplace_back(0.2f, 0.2f, 0.2f);
+	temp_move.scale_vectors.emplace_back(0.3f, 0.3f, 0.3f);
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
 
 	temp_move.translate_vectors.emplace_back(-8.6f, 0.0f, -8.0f);
-	temp_move.scale_vectors.emplace_back(0.4f, 0.4f, 0.4f);
+	temp_move.scale_vectors.emplace_back(0.3f, 0.3f, 0.3f);
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
 
 	temp_move.translate_vectors.emplace_back(-8.6f, 0.0f, -13.0f);
-	temp_move.scale_vectors.emplace_back(0.4f, 0.4f, 0.4f);
+	temp_move.scale_vectors.emplace_back(0.3f, 0.3f, 0.3f);
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
 
 	temp_move.translate_vectors.emplace_back(-8.6f, 0.0f, -38.0f);
-	temp_move.scale_vectors.emplace_back(0.4f, 0.4f, 0.4f);
+	temp_move.scale_vectors.emplace_back(0.3f, 0.3f, 0.3f);
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
 }
@@ -205,6 +332,7 @@ void Tree::write_model_static_transformations()
 
 void Road::draw_model(const Input& in)
 {}
+
 
 void Road::write_model_static_transformations()
 {
@@ -248,6 +376,7 @@ void Road::write_model_static_transformations()
 	clear_Move(temp_move);
 }
 
+
 void Grass::write_model_static_transformations()
 {
 	Move temp_move;
@@ -267,7 +396,7 @@ void Grass::write_model_static_transformations()
 		temp_x = -(rand() % 7 + 7.0f);
 		temp_floating = (rand() % 100 + 1) / 100;
 		temp_z = -(rand() % 40 + 2.0f);
-		std::cout << temp_x << " " << temp_z << " " << std::endl;
+		//std::cout << temp_x << " " << temp_z << " " << std::endl;
 	}
 
 	for (i = 0; i < 110; i++)
@@ -281,16 +410,13 @@ void Grass::write_model_static_transformations()
 		temp_x = rand() % 20 + 3.0f;
 		temp_floating = (rand() % 100 + 1) / 100;
 		temp_z = -(rand() % 60 - 20.0f);
-		std::cout << temp_x << " " << temp_z << " " << std::endl;
-	}
-
-	
+		//std::cout << temp_x << " " << temp_z << " " << std::endl;
+	}	
 }
 
 
 void Grass::draw_model(const Input& in)
 {}
-
 
 
 //////////////////////////////
@@ -408,7 +534,7 @@ void Terrain::draw_terrain(const Input& in)
 
 Input Terrain::read_model_matrices()
 {
-	return Input(P, V, M);
+	return Input(P, V, M, false);
 }
 
 
