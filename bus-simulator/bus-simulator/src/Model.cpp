@@ -1,8 +1,6 @@
 ﻿#include "Model.h"
 
-
 Assimp::Importer importer;
-
 
 Input::Input()
 {}
@@ -11,38 +9,31 @@ Input::Input(float angle_x, float angle_y, glm::mat4 P_scene, glm::mat4 V_scene,
 	angle_x(angle_x), angle_y(angle_y), P(P_scene), V(V_scene), M(M_scene)
 {}
 
-
 Input::Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene, bool czy_box):
 	angle_x(0.0f), angle_y(0.0f), P(P_scene), V(V_scene), M(M_scene), czy_box(czy_box)
 {}
-
 
 
 Model::Model(const char* model_file, const char* model_texture):
 	scene(importer.ReadFile(model_file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes))
 {
 	std::cout << "Reading ... " << model_file << std::endl;
-	// Read texture (one for each model for now)
+
+	// Read texture (one for each model)
 	tex = write_model_texture(model_texture);
-	std::cout << "MODEL FILE: " << model_file << std::endl;
+	
 
 	if (strcmp(model_file, "res/models/Bus.obj") == 0)
 	{
 		box = Utility::create_box(model_file);
-		std::cout << "box created " << std::endl;
-		box.r_x *= 0.009f;
-		box.r_y *= 0.009f;
-		box.r_z *= 0.009f;
+		std::cout << "bus box created " << std::endl;
+		
 	}
 	else if (strcmp(model_file, "res/models/MapleTreeStem.obj") == 0)
 	{
 		box = Utility::create_box(model_file);
-		std::cout << "box created " << std::endl;
-		box.r_x *= 0.3f;
-		box.r_y *= 0.3f;
-		box.r_z *= 0.3f;
+		std::cout << "tree box created " << std::endl;
 	}
-		
 }
 
 
@@ -67,12 +58,10 @@ void Model::write_model()
 			aiVector3D normal = mesh->mNormals[i];
 			temp_mesh.mesh_norms.emplace_back(normal.x, normal.y, normal.z, 0);
 
-			
 			aiVector3D texture_coords = mesh->mTextureCoords[0][i];
 			temp_mesh.mesh_texture_coordinates.emplace_back(texture_coords.x, texture_coords.y);
 
 		}
-
 
 		for (int i = 0; i < mesh->mNumFaces; i++)
 		{
@@ -82,7 +71,6 @@ void Model::write_model()
 			{
 				temp_mesh.mesh_indices.push_back(face.mIndices[j]);
 			}
-
 		}
 
 		meshes.push_back(temp_mesh);
@@ -174,6 +162,30 @@ void Model::translate_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges
 	}
 }
 
+void Model::print_rectangle_coords() const
+{
+	// for each tree (for example) draw it's base coordinates
+	for (int i = 0; i < rectangles.size(); i++)
+	{
+		std::cout << "a: " << rectangles[i][0].x << " " <<
+			rectangles[i][0].y << " " <<
+			rectangles[i][0].z << " " << std::endl <<
+
+			"b: " << rectangles[i][1].x << " " <<
+			rectangles[i][1].y << " " <<
+			rectangles[i][1].z << std::endl <<
+
+			"c: " << rectangles[i][2].x << " " <<
+			rectangles[i][2].y << " " <<
+			rectangles[i][2].z << std::endl <<
+
+			"d: " << rectangles[i][3].x << " " <<
+			rectangles[i][3].y << " " <<
+			rectangles[i][3].z << std::endl << std::endl;
+	}
+	std::cout << std::endl;
+}
+
 ///// END OF TRANSFORMATIONS OF A RECTANGLE
 
 void Model::draw_relative_to_terrain(const Input& in)
@@ -184,51 +196,24 @@ void Model::draw_relative_to_terrain(const Input& in)
 	P = in.P;
 	V = in.V;
 	
-	//struct xyz centre_copy = box.centre;
-	std::vector<struct xyz> temp_edges_copy = box.edges;
-	
+	// Every move per one object (tree/grass)
 	for (int m = 0; m < moves.size(); m++)
 	{
-		//struct xyz centre = centre_copy;
-		//box.centre = centre_copy;
-		
-		std::vector<struct xyz> temp_edges = temp_edges_copy;
-		box.edges = temp_edges_copy;
-		
 		for (int t = 0; t < moves[m].translate_vectors.size(); t++)
 		{
 			M = glm::translate(M, moves[m].translate_vectors[t]);
 
-			// translate centre for collision detection
-			// if (in.czy_box) centre = box.translate(moves[m].translate_vectors[t], centre);
-			
-			if (in.czy_box) translate_rectangle(moves[m].translate_vectors[t], temp_edges);
 		}
 
 		for (int s = 0; s < moves[m].scale_vectors.size(); s++)
 		{
 			M = glm::scale(M, moves[m].scale_vectors[s]);
 
-			// scale centre for collision detection
-			// if (in.czy_box) centre = box.scale(moves[m].scale_vectors[s], centre);
-			
-			if (in.czy_box) scale_rectangle(moves[m].scale_vectors[s], temp_edges);
 		}
 
 		for (int r = 0; r < moves[m].rotate_vectors.size(); r++)
 		{
 			M = glm::rotate(M, moves[m].rotate_angles[r], moves[m].rotate_vectors[r]);
-
-			// rotate centre for collision detection
-			/*
-			if (in.czy_box && moves[m].rotate_vectors[r].x != 0) centre = box.rotate_around_x(moves[m].rotate_angles[r], centre);
-			else if (in.czy_box && moves[m].rotate_vectors[r].y != 0) centre = box.rotate_around_y(moves[m].rotate_angles[r], centre);
-			else if (in.czy_box && moves[m].rotate_vectors[r].z != 0) centre = box.rotate_around_z(moves[m].rotate_angles[r], centre);
-			*/
-			
-			if (in.czy_box && moves[m].rotate_vectors[r].x != 0) rotate_around_x_rectangle(moves[m].rotate_angles[r], temp_edges);
-			else if (in.czy_box && moves[m].rotate_vectors[r].y != 0) rotate_around_y_rectangle(moves[m].rotate_angles[r], temp_edges);
-			else if (in.czy_box && moves[m].rotate_vectors[r].z != 0) rotate_around_z_rectangle(moves[m].rotate_angles[r], temp_edges);
 		}
 
 		// Draw all meshes from meshes vector
@@ -241,15 +226,12 @@ void Model::draw_relative_to_terrain(const Input& in)
 		if (in.czy_box) 
 		{
 			box.draw_bounding_box(P, V, M);
-			rectangles.emplace_back(temp_edges);
-			//temp_centre.emplace_back(centre);
 		}
 		
 		this->M = glm::mat4(1.0f);
 		
 	}
 }
-
 
 void Bus::write_model_static_transformations()
 {}
@@ -278,13 +260,6 @@ void Bus::draw_model(const Input& in)
 
 	box.draw_bounding_box(P, V, M);
 
-	/*
-	struct xyz centre_copy = box.centre;
-	struct xyz centre = box.translate(glm::vec3(-1.0f, 0.0f, 0.0f), centre_copy);
-	centre = box.rotate_around_y(in.angle_y, box.centre);
-	centre = box.rotate_around_x(in.angle_x, centre);
-	centre = box.scale(glm::vec3(0.009f, 0.009f, 0.009f), centre); 
-	*/
 	std::vector<struct xyz> temp_edges_copy = box.edges;
 	std::vector<struct xyz> temp_edges = temp_edges_copy;
 	translate_rectangle(glm::vec3(-1.0f, 0.0f, 0.0f), temp_edges);
@@ -327,6 +302,38 @@ void Tree::write_model_static_transformations()
 	temp_move.scale_vectors.emplace_back(0.3f, 0.3f, 0.3f);
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
+
+	// base of the box static transformation for collision
+	std::vector<struct xyz> temp_edges_copy = box.edges;
+
+	for (int m = 0; m < moves.size(); m++)
+	{
+
+		std::vector<struct xyz> temp_edges = temp_edges_copy;
+		box.edges = temp_edges_copy;
+		
+		for (int t = 0; t < moves[m].translate_vectors.size(); t++)
+		{
+			translate_rectangle(moves[m].translate_vectors[t], temp_edges);
+		}
+
+		for (int s = 0; s < moves[m].scale_vectors.size(); s++)
+		{
+			scale_rectangle(moves[m].scale_vectors[s], temp_edges);
+		}
+
+		for (int r = 0; r < moves[m].rotate_vectors.size(); r++)
+		{
+			if (moves[m].rotate_vectors[r].x != 0) rotate_around_x_rectangle(moves[m].rotate_angles[r], temp_edges);
+			else if (moves[m].rotate_vectors[r].y != 0) rotate_around_y_rectangle(moves[m].rotate_angles[r], temp_edges);
+			else if (moves[m].rotate_vectors[r].z != 0) rotate_around_z_rectangle(moves[m].rotate_angles[r], temp_edges);
+		}
+		rectangles.emplace_back(temp_edges);
+	}
+	
+	std::cout << "TREES COORDS: " << std::endl;
+	print_rectangle_coords();
+	
 }
 
 
@@ -347,7 +354,6 @@ void Road::write_model_static_transformations()
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
 	
-
 	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
 	temp_move.translate_vectors.emplace_back(0.0f, 0.0f, -20.0f);
 	temp_move.rotate_vectors.emplace_back(0.0f, 1.0f, 0.0f);
@@ -385,6 +391,8 @@ void Grass::write_model_static_transformations()
 	float temp_x = -8.0f;
 	float temp_floating = 0.0f;
 	int i;
+	
+	// Left side of the road
 	for (i = 0; i < 30; i++)
 	{
 		temp_move.translate_vectors.emplace_back(temp_x + temp_floating, 0.0f, temp_z + temp_floating);
@@ -399,6 +407,7 @@ void Grass::write_model_static_transformations()
 		//std::cout << temp_x << " " << temp_z << " " << std::endl;
 	}
 
+	// Right side of the road
 	for (i = 0; i < 110; i++)
 	{
 		temp_move.translate_vectors.emplace_back(temp_x + temp_floating, 0.0f, temp_z + temp_floating);

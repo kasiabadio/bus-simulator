@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "Utility.h"
 #include <functional>
-#include <time.h> 
+#include <ctime> 
 
 #include <assimp/mesh.h>
 #include <assimp/Importer.hpp>
@@ -73,20 +73,17 @@ public:
 	glm::mat4 P;
 
 	std::vector<Move> moves;
-	bounding_box box;
 	
-	// initial idea
-	//std::vector<struct xyz> temp_centre;
-
 	// vector which contains tree's rectangles info
+	bounding_box box;
 	std::vector<std::vector<struct xyz>> rectangles;
-	
-	// SAP idea
+
 	void rotate_around_x_rectangle(float angle, std::vector<struct xyz> &edges);
 	void rotate_around_y_rectangle(float angle, std::vector<struct xyz> &edges);
 	void rotate_around_z_rectangle(float angle, std::vector<struct xyz> &edges);
 	void scale_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges);
 	void translate_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges);
+	void print_rectangle_coords() const;
 
 	Model(const char* model_file, const char* model_texture);
 	void write_model(); 
@@ -137,7 +134,7 @@ public:
 };
 
 
-//////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 class Terrain
 {
 public:
