@@ -78,12 +78,8 @@ int main(void)
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glfwSetKeyCallback(scene.read_window(), key_callback);
 	
-	glEnable(GL_DEPTH_TEST | GL_FOG);
-	glFogf(GL_FOG_MODE, GL_LINEAR);
-	glFogf(GL_FOG_START, 1.0f);
-	glFogf(GL_FOG_END, 5.0f);
-	float color[] = {0.5f, 0.5f, 0.5f, 1.0f}; // gray fog same as clear color
-	glFogfv(GL_FOG_COLOR, color);
+	glEnable(GL_DEPTH_TEST);
+	
 
 	scene.write_models();
 	Terrain terrain("res/textures/grass.png", 29, 30);
@@ -100,7 +96,7 @@ int main(void)
 		glfwPollEvents();
 	}
 	
-	glDisable(GL_FOG);
+	
 	freeShaders();
 	
 	glfwTerminate();

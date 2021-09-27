@@ -14,14 +14,21 @@ Input::Input(glm::mat4 P_scene, glm::mat4 V_scene, glm::mat4 M_scene, bool czy_b
 {}
 
 
-Model::Model(const char* model_file, const char* model_texture):
+Model::Model(const char* model_file, const char* model_texture, const char* model_texture1):
 	scene(importer.ReadFile(model_file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_SplitLargeMeshes))
 {
 	std::cout << "Reading ... " << model_file << std::endl;
 
-	// Read texture (one for each model)
-	tex = write_model_texture(model_texture);
+	// Read texture 
+	if (strcmp(model_texture, "null") != 0)
+	{
+		tex = write_model_texture(model_texture);
+	}
 	
+	if (strcmp(model_texture1, "null") != 0)
+	{
+		tex1 = write_model_texture(model_texture1);
+	}
 
 	if (strcmp(model_file, "res/models/Bus.obj") == 0)
 	{
@@ -34,6 +41,8 @@ Model::Model(const char* model_file, const char* model_texture):
 		box = Utility::create_box(model_file);
 		std::cout << "tree box created " << std::endl;
 	}
+
+	
 }
 
 
@@ -74,6 +83,7 @@ void Model::write_model()
 		}
 
 		meshes.push_back(temp_mesh);
+		
 	}
 
 	std::cout << "Number of meshes which were read into vector: " << meshes.size() << std::endl << std::endl;
@@ -202,13 +212,11 @@ void Model::draw_relative_to_terrain(const Input& in)
 		for (int t = 0; t < moves[m].translate_vectors.size(); t++)
 		{
 			M = glm::translate(M, moves[m].translate_vectors[t]);
-
 		}
 
 		for (int s = 0; s < moves[m].scale_vectors.size(); s++)
 		{
 			M = glm::scale(M, moves[m].scale_vectors[s]);
-
 		}
 
 		for (int r = 0; r < moves[m].rotate_vectors.size(); r++)
@@ -219,6 +227,7 @@ void Model::draw_relative_to_terrain(const Input& in)
 		// Draw all meshes from meshes vector
 		for (int i = 0; i < meshes.size(); i++)
 		{
+			
 			Mesh temp_mesh = meshes[i];
 			meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
 		}
@@ -427,6 +436,33 @@ void Grass::write_model_static_transformations()
 void Grass::draw_model(const Input& in)
 {}
 
+
+void Rock::draw_model(const Input& in)
+{
+	this->P = glm::mat4(1.0f);
+	this->V = glm::mat4(1.0f);
+	this->M = glm::mat4(1.0f);
+
+	P = in.P;
+	V = in.V;
+
+	M = glm::translate(M, glm::vec3(2.0f, 0.0f, 0.0f));
+	M = glm::translate(M, glm::vec3(0.0f, 1.0f, 0.0f));
+	M = glm::scale(M, glm::vec3(0.02f, 0.02f, 0.02f));
+
+	// Draw all meshes from meshes vector
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		Mesh temp_mesh = meshes[i];
+		meshes[i].draw_mesh_x2(P, V, M, temp_mesh, tex, tex1);
+	}
+
+}
+
+void Rock::write_model_static_transformations()
+{
+	
+}
 
 //////////////////////////////
 

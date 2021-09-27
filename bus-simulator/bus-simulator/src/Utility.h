@@ -25,16 +25,10 @@ class bounding_box
 {
 public:
 	// lower square
-	struct xyz a;
-	struct xyz b;
-	struct xyz c;
-	struct xyz d;
+	struct xyz a, b, c, d;
 
 	// upper square
-	struct xyz e;
-	struct xyz f;
-	struct xyz g;
-	struct xyz h;
+	struct xyz e, f, g, h;
 
 	// NOT NEEDED NOW centre of the cuboid and its "radius" = half of length of 
 	//struct xyz centre;

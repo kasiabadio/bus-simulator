@@ -24,7 +24,8 @@ public:
 	std::vector<unsigned int> mesh_indices;
 
 	Mesh();
-	void draw_mesh(glm::mat4 P, glm::mat4 V, glm::mat4 M, Mesh& _mesh, const GLuint& _tex) const;
+	void draw_mesh(glm::mat4 P, glm::mat4 V, glm::mat4 M, Mesh& _mesh, const GLuint& _tex) const; // one texture
+	void draw_mesh_x2(glm::mat4 P, glm::mat4 V, glm::mat4 M, Mesh& _mesh, const GLuint& _tex, const GLuint& _tex1) const; // two textures
 
 };
 

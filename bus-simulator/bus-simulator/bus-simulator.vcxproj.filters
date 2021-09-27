@@ -100,6 +100,15 @@
     <Image Include="res\textures\Solid_red.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="res\textures\BusStop\BusStop_low_base_Roughness.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\sutr_tmave_sedy.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\textures\sutr_tmave_sedy_ao.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\f_colored.glsl" />
@@ -112,5 +121,7 @@
     <None Include="res\shaders\v_lambert.glsl" />
     <None Include="res\shaders\v_lamberttextured.glsl" />
     <None Include="res\shaders\v_textured.glsl" />
+    <None Include="res\shaders\f_lambertmultitextured.glsl" />
+    <None Include="res\shaders\v_lambertmultitextured.glsl" />
   </ItemGroup>
 </Project>

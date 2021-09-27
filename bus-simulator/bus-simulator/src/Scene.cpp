@@ -17,25 +17,30 @@ Scene::Scene(int _width, int _height)
 void Scene::write_models()
 {
 	// Road
-	models.emplace_back(new Road("res/models/Road.obj", "res/textures/RoadDiffuse.png"));
+	models.emplace_back(new Road("res/models/Road.obj", "res/textures/RoadDiffuse.png", "null"));
 	models[0]->write_model();
 	models[0]->write_model_static_transformations();
 	
 	// Bus
-	models.emplace_back(new Bus("res/models/Bus.obj", "res/textures/Bus_tex.tga.png"));
+	models.emplace_back(new Bus("res/models/Bus.obj", "res/textures/Bus_tex.tga.png", "null"));
 	models[1]->write_model();
 	models[1]->box.make_bounding_box();
 	
 	// Tree
-	models.emplace_back(new Tree("res/models/MapleTreeStem.obj", "res/textures/maple_bark.png"));
+	models.emplace_back(new Tree("res/models/MapleTreeStem.obj", "res/textures/maple_bark.png", "null"));
 	models[2]->write_model();
 	models[2]->write_model_static_transformations();
 	models[2]->box.make_bounding_box();
 	
 	// Grass
-	models.emplace_back(new Grass("res/models/grass variations.obj", "res/textures/Blades of Grass.png"));
+	models.emplace_back(new Grass("res/models/grass variations.obj", "res/textures/Blades of Grass.png", "null"));
 	models[3]->write_model();
 	models[3]->write_model_static_transformations();
+
+	// Rock
+	models.emplace_back(new Rock("res/models/sutr_tmave_sedy.fbx", "res/textures/sutr_tmave_sedy.png", "res/textures/sutr_tmave_sedy_ao.png"));
+	models[4]->write_model();
+	
 } 
 
 
@@ -74,7 +79,10 @@ void Scene::draw_scene(float angle_x, float angle_y, Terrain& terrain) const
 	// DRAW GRASS
 	models[3]->draw_relative_to_terrain(Input(angle_x, angle_y, terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M));
 
-
+	// DRAW ROCK
+	models[4]->draw_model(Input(terrain.read_model_matrices().P, terrain.read_model_matrices().V, terrain.read_model_matrices().M, true));
+	
+	
 	// COLLISION DETECTION
 	// printing base coords of the bus here, because these are changing with movement
 	std::cout << "BUS: " << std::endl;

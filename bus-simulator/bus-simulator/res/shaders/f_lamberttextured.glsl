@@ -22,7 +22,6 @@ void main(void) {
 	for (int i = 0; i < 2; i++)
 	{
 		pixel_color+=vec4(color.rgb*i_nl[i],color.a)+vec4(i_rv[i],i_rv[i],i_rv[i],0);
-		
-		//pixel_color=vec4(color.rgb*i_nl_first,color.a);
+
 	}
 }

@@ -64,6 +64,7 @@ class Model
 protected:
 	const aiScene* scene;
 	GLuint tex;
+	GLuint tex1;
 
 public:
 
@@ -78,23 +79,23 @@ public:
 	bounding_box box;
 	std::vector<std::vector<struct xyz>> rectangles;
 
-	void rotate_around_x_rectangle(float angle, std::vector<struct xyz> &edges);
-	void rotate_around_y_rectangle(float angle, std::vector<struct xyz> &edges);
-	void rotate_around_z_rectangle(float angle, std::vector<struct xyz> &edges);
-	void scale_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges);
-	void translate_rectangle(glm::vec3 vector, std::vector<struct xyz> &edges);
-	void print_rectangle_coords() const;
 
-	Model(const char* model_file, const char* model_texture);
+	Model(const char* model_file, const char* model_texture, const char* model_texture1);
 	void write_model(); 
+	virtual void write_model_static_transformations() = 0;
 	virtual void draw_model(const Input& in) = 0;
 	void draw_relative_to_terrain(const Input& in);
 	
-	virtual void write_model_static_transformations() = 0;
-
 	Input read_model_matrices();
 	GLuint write_model_texture(const char* filename);
 	GLuint read_tex() const { return tex; }
+
+	void rotate_around_x_rectangle(float angle, std::vector<struct xyz>& edges);
+	void rotate_around_y_rectangle(float angle, std::vector<struct xyz>& edges);
+	void rotate_around_z_rectangle(float angle, std::vector<struct xyz>& edges);
+	void scale_rectangle(glm::vec3 vector, std::vector<struct xyz>& edges);
+	void translate_rectangle(glm::vec3 vector, std::vector<struct xyz>& edges);
+	void print_rectangle_coords() const;
 };
 
 
@@ -134,12 +135,21 @@ public:
 };
 
 
+class Rock : public Model
+{
+public:
+	using Model::Model;
+	void draw_model(const Input& in) override;
+	void write_model_static_transformations() override;
+};
+
+
 //////////////////////////////////////////////////////////////////////////////////
 class Terrain
 {
 public:
 	const aiScene* scene;
-	Terrain(const char* model_texture, int height, int width);
+	
 	GLuint tex;
 	glm::mat4 M;
 	glm::mat4 V;
@@ -152,14 +162,13 @@ public:
 	std::vector<glm::vec2> terrain_texture_coordinates;
 	std::vector<unsigned int> terrain_indices;
 
-	
+	Terrain(const char* model_texture, int height, int width);
 	void draw_terrain(const Input& in);
 	Input read_model_matrices();
 	int terrain_indices_count() const;
 	int terrain_vertices_count() const;
 	GLuint write_model_texture(const char* filename);
-	GLuint read_tex() const { return tex; }
-
+	
 };
 
 

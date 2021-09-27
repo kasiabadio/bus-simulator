@@ -242,6 +242,7 @@
   <ItemGroup>
     <Image Include="res\textures\Blades of Grass.png" />
     <Image Include="res\textures\bricks.png" />
+    <Image Include="res\textures\BusStop\BusStop_low_base_Roughness.png" />
     <Image Include="res\textures\Bus_tex.tga.png" />
     <Image Include="res\textures\grass.png" />
     <Image Include="res\textures\Green_Screen.png" />
@@ -254,16 +255,20 @@
     <Image Include="res\textures\RoadDiffuse.png" />
     <Image Include="res\textures\Solid_red.png" />
     <Image Include="res\textures\Sting_Base_Color.png" />
+    <Image Include="res\textures\sutr_tmave_sedy.png" />
+    <Image Include="res\textures\sutr_tmave_sedy_ao.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\f_colored.glsl" />
     <None Include="res\shaders\f_constant.glsl" />
     <None Include="res\shaders\f_lambert.glsl" />
+    <None Include="res\shaders\f_lambertmultitextured.glsl" />
     <None Include="res\shaders\f_lamberttextured.glsl" />
     <None Include="res\shaders\f_textured.glsl" />
     <None Include="res\shaders\v_colored.glsl" />
     <None Include="res\shaders\v_constant.glsl" />
     <None Include="res\shaders\v_lambert.glsl" />
+    <None Include="res\shaders\v_lambertmultitextured.glsl" />
     <None Include="res\shaders\v_lamberttextured.glsl" />
     <None Include="res\shaders\v_textured.glsl" />
   </ItemGroup>
