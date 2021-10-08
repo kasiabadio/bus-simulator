@@ -47,3 +47,4 @@ $(SolutionDir)\Dependencies\GLEW\lib\Release\Win32
 
 -> input data -> additional dependencies:  
 zlib.lib;IrrXML.lib;assimp-vc142-mt.lib;glew32s.lib;glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib
+
