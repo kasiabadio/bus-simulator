@@ -56,6 +56,8 @@ public:
 namespace Utility
 {
 	bounding_box create_box(std::string file_name);
+	bool check_collision(std::vector<struct xyz> edges, std::vector<struct xyz> edges1);
+	
 };
 
 #endif

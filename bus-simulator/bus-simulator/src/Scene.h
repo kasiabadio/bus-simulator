@@ -2,6 +2,7 @@
 #define SCENE_H_
 
 #include "Model.h"
+#include "Camera.h"
 #include <GLFW/glfw3.h>
 
 #include <vector>
@@ -14,7 +15,7 @@ private:
 
 public:
 	Scene(int _width, int _height);
-	void draw_scene(float angle_x, float angle_y, Terrain& terrain) const;
+	void draw_scene(float angle_x, float angle_y, Terrain& terrain, Camera& camera) const;
 	GLFWwindow* read_window() const { return window; }
 	void write_models();
 	

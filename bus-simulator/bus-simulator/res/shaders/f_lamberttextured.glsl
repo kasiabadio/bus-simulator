@@ -6,8 +6,8 @@ out vec4 pixel_color;
 
 //Zmienne interpolowane
 in vec2 i_tc;
-in float i_nl[2];
-in float i_rv[2];
+in float i_nl[4];
+in float i_rv[4];
 
 
 void main(void) {
@@ -19,9 +19,10 @@ void main(void) {
 	// ls*ks*rv = vec4(1,1,1,0)*vec4(1,1,1,0)*i_rv
 
 	pixel_color = vec4(0,0,0,0);
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		pixel_color+=vec4(color.rgb*i_nl[i],color.a)+vec4(i_rv[i],i_rv[i],i_rv[i],0);
-
+		
+		//pixel_color=vec4(color.rgb*i_nl_first,color.a);
 	}
 }

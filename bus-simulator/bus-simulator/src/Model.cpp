@@ -32,17 +32,15 @@ Model::Model(const char* model_file, const char* model_texture, const char* mode
 
 	if (strcmp(model_file, "res/models/Bus.obj") == 0)
 	{
-		box = Utility::create_box(model_file);
+		//box = Utility::create_box(model_file);
 		std::cout << "bus box created " << std::endl;
 		
 	}
 	else if (strcmp(model_file, "res/models/MapleTreeStem.obj") == 0)
 	{
-		box = Utility::create_box(model_file);
+		//box = Utility::create_box(model_file);
 		std::cout << "tree box created " << std::endl;
 	}
-
-	
 }
 
 
@@ -125,7 +123,7 @@ GLuint Model::write_model_texture(const char* filename)
 }
 
 // TRANSFORMATIONS OF A RECTANGLE
-// needed for SAP
+// needed for SAP (separated axis theorem)
 void Model::rotate_around_x_rectangle(float angle, std::vector<struct xyz> &edges)
 {
 	for (int i = 0; i < edges.size(); i++)
@@ -227,7 +225,6 @@ void Model::draw_relative_to_terrain(const Input& in)
 		// Draw all meshes from meshes vector
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			
 			Mesh temp_mesh = meshes[i];
 			meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
 		}
@@ -254,10 +251,19 @@ void Bus::draw_model(const Input& in)
 	
 	P = in.P;
 	V = in.V;
-	
-	M = glm::translate(M, glm::vec3(-1.0f, 0.0f, 0.0f));
+	/*
+	 M = glm::translate(M, glm::vec3(in.angle_y, 0.0f, 0.0f));
+
+	//M = glm::rotate(M, in.angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::translate(M, glm::vec3(0.0f, 0.0f, in.angle_x));
 	M = glm::rotate(M, in.angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
-	M = glm::rotate(M, in.angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::scale(M, glm::vec3(0.009f, 0.009f, 0.009f));
+
+	 */
+
+	M = glm::rotate(M, in.angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
+	M = glm::translate(M, glm::vec3(sin(glm::radians(in.angle_y)) * in.angle_x, 0.0f, cos(glm::radians(in.angle_y)) * in.angle_x));
+
 	M = glm::scale(M, glm::vec3(0.009f, 0.009f, 0.009f));
 	
 	// Draw all meshes from meshes vector
@@ -267,8 +273,11 @@ void Bus::draw_model(const Input& in)
 		meshes[i].draw_mesh(P, V, M, temp_mesh, tex);
 	}
 
+	
+	// base of the box transformation for collision
+	/*
 	box.draw_bounding_box(P, V, M);
-
+	
 	std::vector<struct xyz> temp_edges_copy = box.edges;
 	std::vector<struct xyz> temp_edges = temp_edges_copy;
 	translate_rectangle(glm::vec3(-1.0f, 0.0f, 0.0f), temp_edges);
@@ -277,6 +286,8 @@ void Bus::draw_model(const Input& in)
 	scale_rectangle(glm::vec3(0.009f, 0.009f, 0.009f), temp_edges);
 
 	rectangles.emplace_back(temp_edges);
+	 */
+	
 
 }
 
@@ -302,6 +313,7 @@ void Tree::write_model_static_transformations()
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
 
+	
 	temp_move.translate_vectors.emplace_back(-8.6f, 0.0f, -13.0f);
 	temp_move.scale_vectors.emplace_back(0.3f, 0.3f, 0.3f);
 	moves.push_back(temp_move);
@@ -312,7 +324,8 @@ void Tree::write_model_static_transformations()
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
 
-	// base of the box static transformation for collision
+	// base of the box transformation for collision
+	/*
 	std::vector<struct xyz> temp_edges_copy = box.edges;
 
 	for (int m = 0; m < moves.size(); m++)
@@ -342,6 +355,8 @@ void Tree::write_model_static_transformations()
 	
 	std::cout << "TREES COORDS: " << std::endl;
 	print_rectangle_coords();
+	*/
+	
 	
 }
 
@@ -354,37 +369,33 @@ void Road::write_model_static_transformations()
 {
 	Move temp_move;
 
+	GLfloat tmpFloat = -35.0f;
+	for (int i = 0; i <= 7; i++) {
+
+		temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
+		temp_move.translate_vectors.emplace_back(0.0f, 0.0f, tmpFloat);
+		temp_move.rotate_vectors.emplace_back(0.0f, 1.0f, 0.0f);
+		temp_move.rotate_angles.emplace_back(glm::radians(90.0f));
+		temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
+
+		moves.push_back(temp_move);
+		clear_Move(temp_move);
+		tmpFloat += 17.9f;
+	}
+
 	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
-	temp_move.translate_vectors.emplace_back(0.0f, 0.0f, -35.0f);
+	temp_move.translate_vectors.emplace_back(-8.25f, 0.0f, 11.0f);
 	temp_move.rotate_vectors.emplace_back(0.0f, 1.0f, 0.0f);
-	temp_move.rotate_angles.emplace_back(glm::radians(90.0f));
+	temp_move.rotate_angles.emplace_back(glm::radians(0.0f));
 	temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
 
 	moves.push_back(temp_move);
 	clear_Move(temp_move);
-	
-	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
-	temp_move.translate_vectors.emplace_back(0.0f, 0.0f, -20.0f);
-	temp_move.rotate_vectors.emplace_back(0.0f, 1.0f, 0.0f);
-	temp_move.rotate_angles.emplace_back(glm::radians(90.0f));
-	temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
 
-	moves.push_back(temp_move);
-	clear_Move(temp_move);
-	
 	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
-	temp_move.translate_vectors.emplace_back(0.0f, 0.0f, -4.0f);
+	temp_move.translate_vectors.emplace_back(-26.0f, 0.0f, 11.0f);
 	temp_move.rotate_vectors.emplace_back(0.0f, 1.0f, 0.0f);
-	temp_move.rotate_angles.emplace_back(glm::radians(90.0f));
-	temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
-
-	moves.push_back(temp_move);
-	clear_Move(temp_move);
-	
-	temp_move.translate_vectors.emplace_back(-7.0f, 0.0f, 0.0f);
-	temp_move.translate_vectors.emplace_back(0.0f, 0.0f, 5.0f);
-	temp_move.rotate_vectors.emplace_back(0.0f, 1.0f, 0.0f);
-	temp_move.rotate_angles.emplace_back(glm::radians(90.0f));
+	temp_move.rotate_angles.emplace_back(glm::radians(0.0f));
 	temp_move.scale_vectors.emplace_back(0.01f, 0.01f, 0.01f);
 
 	moves.push_back(temp_move);
@@ -446,23 +457,23 @@ void Rock::draw_model(const Input& in)
 	P = in.P;
 	V = in.V;
 
-	M = glm::translate(M, glm::vec3(2.0f, 0.0f, 0.0f));
-	M = glm::translate(M, glm::vec3(0.0f, 1.0f, 0.0f));
-	M = glm::scale(M, glm::vec3(0.02f, 0.02f, 0.02f));
+	M = glm::translate(M, glm::vec3(3.0f, 0.0f, 0.0f));
+	M = glm::translate(M, glm::vec3(0.0f, 0.5f, 0.0f));
+	M = glm::rotate(M, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	M = glm::scale(M, glm::vec3(0.05f, 0.05f, 0.05f));
 
 	// Draw all meshes from meshes vector
 	for (int i = 0; i < meshes.size(); i++)
 	{
 		Mesh temp_mesh = meshes[i];
+		// two textures
 		meshes[i].draw_mesh_x2(P, V, M, temp_mesh, tex, tex1);
 	}
 
 }
 
 void Rock::write_model_static_transformations()
-{
-	
-}
+{}
 
 //////////////////////////////
 
@@ -471,7 +482,6 @@ Terrain::Terrain(const char* model_texture, int height, int width):
 {
 	tex = write_model_texture(model_texture);
 	std::cout << "Read terrain texture ..." << std::endl;
-
 
 	for (int row = 0; row < terrain_height; row++)
 	{
@@ -482,7 +492,7 @@ Terrain::Terrain(const char* model_texture, int height, int width):
 
 			//std::cout << random_num << std::endl;
 			terrain_verts.emplace_back(col, row, 0, 1);
-			terrain_norms.emplace_back(0, 1, 0, 0);
+			terrain_norms.emplace_back(0, 0, 1, 0);
 			//std::cout << col << " " << row << std::endl;
 		}
 
@@ -551,7 +561,7 @@ void Terrain::draw_terrain(const Input& in)
 	M = glm::translate(M, glm::vec3(-50.0f, 0.0f, -45.0f));
 	M = glm::rotate(M, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	M = glm::scale(M, glm::vec3(10.0f, 10.0f, 10.0f));
-	
+
 	spLambertTextured->use();
 	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
@@ -560,7 +570,7 @@ void Terrain::draw_terrain(const Input& in)
 	glEnableVertexAttribArray(spLambertTextured->a("normal"));
 
 	glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M));
-	
+
 	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, terrain_verts.data());
 	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, terrain_texture_coordinates.data());
 	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, terrain_norms.data());
@@ -569,7 +579,7 @@ void Terrain::draw_terrain(const Input& in)
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(spLambertTextured->u("tex"), 0);
 
-	glDrawElements(GL_TRIANGLES, terrain_indices_count(), GL_UNSIGNED_INT, terrain_indices.data());
+	glDrawElements(GL_TRIANGLES, terrain_indices.size(), GL_UNSIGNED_INT, terrain_indices.data());
 
 	glDisableVertexAttribArray(spLambertTextured->a("vertex"));
 	glDisableVertexAttribArray(spLambertTextured->a("color"));
@@ -580,18 +590,6 @@ void Terrain::draw_terrain(const Input& in)
 Input Terrain::read_model_matrices()
 {
 	return Input(P, V, M, false);
-}
-
-
-int Terrain::terrain_indices_count() const
-{
-	return terrain_height * terrain_width * 3;
-}
-
-
-int Terrain::terrain_vertices_count() const
-{
-	return (terrain_width * terrain_height) + (terrain_width - 1) * (terrain_height - 2);
 }
 
 
@@ -620,8 +618,6 @@ GLuint Terrain::write_model_texture(const char* filename)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	return tex;
 }
 

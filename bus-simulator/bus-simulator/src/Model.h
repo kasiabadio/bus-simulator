@@ -165,8 +165,6 @@ public:
 	Terrain(const char* model_texture, int height, int width);
 	void draw_terrain(const Input& in);
 	Input read_model_matrices();
-	int terrain_indices_count() const;
-	int terrain_vertices_count() const;
 	GLuint write_model_texture(const char* filename);
 	
 };

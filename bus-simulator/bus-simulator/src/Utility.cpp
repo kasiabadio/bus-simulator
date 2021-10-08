@@ -110,6 +110,104 @@ bounding_box Utility::create_box(std::string file_name)
     return temp_box;
 }
 
+// edges tab contains four points
+bool Utility::check_collision(std::vector<struct xyz> edges, std::vector<struct xyz> edges1)
+{
+    float min_edges, max_edges, min_edges1, max_edges1;
+    float overlap = std::numeric_limits<float>::infinity();
+
+    std::cout << "Checking against edges' normals" << std::endl;
+	// CHECKING AGAINST edges' NORMALS
+	for (int e = 0; e < edges.size(); e++)
+	{
+        int e_b = (e + 1) % edges.size();
+        std::cout << "e: " << e << std::endl;
+        std::cout << "e_b: " << e_b << std::endl;
+
+		// axis is in form of x, y, z but y component is not used later
+        struct xyz projected_axis = { -(edges[e_b].z - edges[e].z), 0, edges[e_b].x - edges[e].x };
+        float d = sqrtf(projected_axis.x * projected_axis.x + projected_axis.z * projected_axis.z);
+        projected_axis = { projected_axis.x / d, projected_axis.z / d };
+
+        min_edges = std::numeric_limits<float>::infinity();
+		max_edges = -std::numeric_limits<float>::infinity();
+        // find min, max points of edges = shadow
+        for (int i = 0; i < edges.size(); i++)
+        {
+            float x = (edges[i].x * projected_axis.x + edges[i].z * projected_axis.z);
+            min_edges = std::min(min_edges, x);
+            max_edges = std::max(max_edges, x);
+        }
+
+        min_edges1 = std::numeric_limits<float>::infinity();
+        max_edges1 = -std::numeric_limits<float>::infinity();
+        // find min, max points of edges1 = shadow
+        for (int i = 0; i < edges1.size(); i++)
+        {
+            float x = (edges1[i].x * projected_axis.x + edges1[i].z * projected_axis.z);
+            min_edges1 = std::min(min_edges1, x);
+            max_edges1 = std::max(max_edges1, x);
+        }
+
+		overlap = std::min(std::min(max_edges, max_edges1) - std::max(min_edges, min_edges1), overlap);
+		// if shadows don't overlap for minimum one edge => no collision
+        std::cout << max_edges1 << " " << min_edges << " " << max_edges << " " << min_edges1 << std::endl;        //std::cout << (max_edges1 >= min_edges && max_edges >= min_edges1) << std::endl;
+        if ((max_edges1 >= min_edges && max_edges >= min_edges1) == false)
+        {
+            std::cout << "no collision" << std::endl;
+            return false;
+        }
+	}
+
+
+    std::cout << "Checking against edges1' normals" << std::endl;
+    // CHECKING AGAINST edges1' NORMALS
+    for (int e = 0; e < edges1.size(); e++)
+    {
+        int e_b = (e + 1) % edges1.size();
+
+        // axis is in form of x, y, z but y component is not used later
+        struct xyz projected_axis = { -(edges1[e_b].z - edges1[e].z), 0, edges1[e_b].x - edges1[e].x };
+        std::cout << "e: " << e << std::endl;
+        std::cout << "e_b: " << e_b << std::endl;
+
+        min_edges = std::numeric_limits<float>::infinity();
+        max_edges = -std::numeric_limits<float>::infinity();
+         // find min, max points of edges = shadow
+        for (int i = 0; i < edges.size(); i++)
+        {
+            float x = (edges[i].x * projected_axis.x + edges[i].z * projected_axis.z);
+            min_edges = std::min(min_edges, x);
+            max_edges = std::max(max_edges, x);
+        }
+
+        min_edges1 = std::numeric_limits<float>::infinity();
+        max_edges1 = -std::numeric_limits<float>::infinity();
+        // find min, max points of edges1 = shadow
+        for (int i = 0; i < edges1.size(); i++)
+        {
+            float x = (edges1[i].x * projected_axis.x + edges1[i].z * projected_axis.z);
+            min_edges1 = std::min(min_edges1, x);
+            max_edges1 = std::max(max_edges1, x);
+        }
+
+        overlap = std::min(std::min(max_edges, max_edges1) - std::max(min_edges, min_edges1), overlap);
+
+        // if shadows don't overlap for minimum one edge => no collision
+        std::cout << max_edges1 << " " << min_edges << " " << max_edges << " " << min_edges1 << std::endl;
+        //std::cout << (max_edges1 >= min_edges && max_edges >= min_edges1) << std::endl;
+        if ((max_edges1 >= min_edges && max_edges >= min_edges1) == false)
+        {
+            std::cout << "no collision" << std::endl;
+            return false;
+        }
+            
+    }
+	
+	// if shadows overlap for every case => collision 
+    return true;
+}
+
 
 bounding_box::bounding_box()
 {}
